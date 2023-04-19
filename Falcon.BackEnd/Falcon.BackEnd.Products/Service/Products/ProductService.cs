@@ -13,19 +13,19 @@ namespace Falcon.BackEnd.Products.Service.Products
 
         public ObjectResult<Product> Create(ProductInput data)
         {
-            var retVal = new ObjectResult<Product>();
-
-            retVal.Obj = new Product()
+            var retVal = new ObjectResult<Product>
             {
-                Code = data.Code,
-                Name = data.Name,
-                Remark = data.Remark,
-                Price = data.Price,
-                ProductValidTo = DateTime.MaxValue
+                Obj = new Product()
+                {
+                    Code = data.Code,
+                    Name = data.Name,
+                    Remark = data.Remark,
+                    Price = data.Price,
+                    ProductValidTo = DateTime.MaxValue
+                }
             };
 
             _dbContext.Products.Add(retVal.Obj);
-            _dbContext.SaveChanges();
 
             retVal.OK(null);
 

@@ -1,8 +1,6 @@
+using Falcon.Libraries.Security.JwtToken;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Falcon.Libraries.Security.JwtToken;
 
 namespace Falcon.BackEnd.APIGateway
 {

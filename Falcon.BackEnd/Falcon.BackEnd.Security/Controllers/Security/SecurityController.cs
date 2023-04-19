@@ -39,7 +39,7 @@ namespace Falcon.BackEnd.Security.Controllers.Security
 
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
-                
+
                 retVal.Obj = tokenHandler.WriteToken(token);
                 retVal.OK(null);
                 return retVal;

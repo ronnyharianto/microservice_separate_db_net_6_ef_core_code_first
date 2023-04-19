@@ -1,10 +1,10 @@
 ﻿using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Controllers.Products.Validators;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
+using Falcon.BackEnd.Products.Service.Products;
 using Falcon.Libraries.Common.Object;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
-using Falcon.BackEnd.Products.Service.Products;
 
 namespace Falcon.BackEnd.Products.Controllers.Products
 {
@@ -36,7 +36,7 @@ namespace Falcon.BackEnd.Products.Controllers.Products
         }
 
         [HttpGet("viewlist")]
-        public ObjectResult<IQueryable<Product>> LoadProductLists() 
+        public ObjectResult<IQueryable<Product>> LoadProductLists()
         {
             return _productService.GetListProducts();
         }

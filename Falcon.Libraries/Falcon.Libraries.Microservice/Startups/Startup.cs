@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Falcon.Libraries.Microservice.Controllers;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System.Text.Json.Serialization;
 
 namespace Falcon.Libraries.Microservice.Startups
@@ -14,7 +14,12 @@ namespace Falcon.Libraries.Microservice.Startups
             Builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            Builder.Services.AddControllers().AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+            Builder.Services.AddControllers(o =>
+                {
+                    //Add transaction filter to apply transaction scope for each request on controller
+                    o.Filters.Add<TransactionFilterAttribute<TApplicationDbContext>>();
+                })
+                .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
             Builder.Services.AddDbContext<TApplicationDbContext>(
                 options => options.UseNpgsql(Builder.Configuration.GetConnectionString("Default"))
             );
