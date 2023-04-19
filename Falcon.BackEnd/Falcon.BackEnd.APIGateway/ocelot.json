@@ -1,29 +1,33 @@
 {
     "GlobalConfiguration": {
-        "BaseUrl": "https://localhost:7182"
+        "BaseUrl": "https://localhost:5000" //External URL that clients will see Ocelot running on
     },
     "Routes": [
         {
-            "UpstreamPathTemplate": "/product/{action}",
-            "UpstreamHttpMethod": [ "Get" ],
-            "DownstreamPathTemplate": "/api/v1/product/{action}",
+            "UpstreamPathTemplate": "/product/{catchAll}",
+            "UpstreamHttpMethod": [ "Get", "Post" ],
+            "DownstreamPathTemplate": "/api/v1/product/{catchAll}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {
                     "Host": "localhost",
-                    "Port": 7148
+                    "Port": 5010
                 }
-            ]
+            ],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "TestKey",
+                "AllowedScopes": []
+            }
         },
         {
-            "UpstreamPathTemplate": "/product/{action}/{param1}",
-            "UpstreamHttpMethod": [ "Get" ],
-            "DownstreamPathTemplate": "/api/v1/product/{action}/{param1}",
+            "UpstreamPathTemplate": "/security/{catchAll}",
+            "UpstreamHttpMethod": [ "Get", "Post" ],
+            "DownstreamPathTemplate": "/api/v1/security/{catchAll}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {
                     "Host": "localhost",
-                    "Port": 7148
+                    "Port": 5020
                 }
             ]
         }

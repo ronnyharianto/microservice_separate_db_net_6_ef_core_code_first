@@ -1,9 +1,7 @@
 ﻿using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Controllers.Products.Validators;
-using Falcon.BackEnd.Products.Domain;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.Libraries.Common.Object;
-using Falcon.Libraries.Common.Constants;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Mvc;
 using Falcon.BackEnd.Products.Service.Products;
@@ -38,13 +36,13 @@ namespace Falcon.BackEnd.Products.Controllers.Products
         }
 
         [HttpGet("viewlist")]
-        public ObjectResult<IQueryable<Product>> GetListProducts() 
+        public ObjectResult<IQueryable<Product>> LoadProductLists() 
         {
             return _productService.GetListProducts();
         }
 
         [HttpGet("view/{id}")]
-        public ObjectResult<Product> GetDetailProduct(Guid id)
+        public ObjectResult<Product> LoadProductDetail(Guid id)
         {
             return _productService.GetDetailProduct(id);
         }
