@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Falcon.BackEnd.APIGateway",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Falcon.BackEnd.Security", "Falcon.BackEnd\Falcon.BackEnd.Security\Falcon.BackEnd.Security.csproj", "{A7E33CE0-BC81-4087-9007-10317D3D5BD0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Falcon.Libraries.Security", "Falcon.Libraries\Falcon.Libraries.Security\Falcon.Libraries.Security.csproj", "{29AEF10C-8540-436F-A639-761DDA1255F2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,10 @@ Global
 		{A7E33CE0-BC81-4087-9007-10317D3D5BD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7E33CE0-BC81-4087-9007-10317D3D5BD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7E33CE0-BC81-4087-9007-10317D3D5BD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29AEF10C-8540-436F-A639-761DDA1255F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29AEF10C-8540-436F-A639-761DDA1255F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29AEF10C-8540-436F-A639-761DDA1255F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29AEF10C-8540-436F-A639-761DDA1255F2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +66,7 @@ Global
 		{AE370D1C-E321-4111-BEED-FE0EF59B9747} = {9CB42E41-E578-478F-8883-481C5DDDC596}
 		{0ADDD28E-9298-4569-ACFD-B86DC234F957} = {BB0634E3-E4A0-4878-B8E5-D33772B5092C}
 		{A7E33CE0-BC81-4087-9007-10317D3D5BD0} = {BB0634E3-E4A0-4878-B8E5-D33772B5092C}
+		{29AEF10C-8540-436F-A639-761DDA1255F2} = {9CB42E41-E578-478F-8883-481C5DDDC596}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F930F9D5-D293-4344-BC09-1768E6C38115}

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Text.Json.Serialization;
 
-namespace Falcon.Libraries.Microservice
+namespace Falcon.Libraries.Microservice.Startups
 {
     public class Startup<TApplicationDbContext> where TApplicationDbContext : DbContext
     {
@@ -18,10 +18,6 @@ namespace Falcon.Libraries.Microservice
             Builder.Services.AddDbContext<TApplicationDbContext>(
                 options => options.UseNpgsql(Builder.Configuration.GetConnectionString("Default"))
             );
-
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            Builder.Services.AddEndpointsApiExplorer();
-            Builder.Services.AddSwaggerGen();
         }
 
         public WebApplicationBuilder Builder { get; set; }
@@ -35,16 +31,9 @@ namespace Falcon.Libraries.Microservice
             {
                 var dbContext = scope.ServiceProvider
                     .GetRequiredService<TApplicationDbContext>();
-                
+
                 //dbContext.Database.Migrate();
                 dbContext.Database.EnsureCreated();
-            }
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();

@@ -1,4 +1,5 @@
 ﻿using Falcon.BackEnd.Products.Controllers.Products.Inputs;
+using Falcon.Libraries.Common.Constants;
 using Falcon.Libraries.Common.Object;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -19,9 +20,8 @@ namespace Falcon.BackEnd.Security.Controllers.Security
 
             if (input.UserName == "username" && input.Password == "password")
             {
-                var issuer = "Issuer";
-                var audience = "Audience";
-                var key = Encoding.ASCII.GetBytes("ronny1234567890-");
+                var key = Encoding.ASCII.GetBytes(SecurityConstant.Key);
+
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
                     Subject = new ClaimsIdentity(new[]
@@ -29,19 +29,16 @@ namespace Falcon.BackEnd.Security.Controllers.Security
                             new Claim("Id", Guid.NewGuid().ToString()),
                             new Claim(JwtRegisteredClaimNames.Sub, input.UserName),
                             new Claim(JwtRegisteredClaimNames.Email, input.UserName),
-                            new Claim(JwtRegisteredClaimNames.Jti,
-                            Guid.NewGuid().ToString())
-                            }),
-                    Expires = DateTime.UtcNow.AddMinutes(5),
-                    Issuer = issuer,
-                    Audience = audience,
-                    SigningCredentials = new SigningCredentials
-                    (new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha512Signature)
+                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(SecurityConstant.ExpiryInDays),
+                    Issuer = SecurityConstant.Issuer,
+                    Audience = SecurityConstant.Audience,
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
                 };
+
                 var tokenHandler = new JwtSecurityTokenHandler();
                 var token = tokenHandler.CreateToken(tokenDescriptor);
-                //var jwtToken = tokenHandler.WriteToken(token);
                 
                 retVal.Obj = tokenHandler.WriteToken(token);
                 retVal.OK(null);

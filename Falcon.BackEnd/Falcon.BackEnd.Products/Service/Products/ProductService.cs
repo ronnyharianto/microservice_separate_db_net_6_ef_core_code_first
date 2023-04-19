@@ -2,7 +2,7 @@
 using Falcon.BackEnd.Products.Domain;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.Libraries.Common.Object;
-using Falcon.Libraries.Microservice;
+using Falcon.Libraries.Microservice.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Falcon.BackEnd.Products.Service.Products

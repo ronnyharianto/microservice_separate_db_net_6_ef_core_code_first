@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Falcon.Libraries.Microservice
+namespace Falcon.Libraries.Microservice.Services
 {
     public class BaseService<TApplicationDbContext> where TApplicationDbContext : DbContext
     {
