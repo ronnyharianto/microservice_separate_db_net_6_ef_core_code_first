@@ -1,4 +1,5 @@
-﻿using Falcon.Libraries.Microservice.Controllers;
+﻿using Falcon.Libraries.Microservice.Cancellation;
+using Falcon.Libraries.Microservice.Controllers;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -38,6 +39,7 @@ namespace Falcon.Libraries.Microservice.Startups
                                      .Where(x => !x.IsAbstract && !x.IsInterface && typeof(IValidator).IsAssignableFrom(x))
                                      .ToList();
 
+            // Automatic add validator to the service container
             foreach (var validator in validators)
             {
                 var validatorType = validator.BaseType;

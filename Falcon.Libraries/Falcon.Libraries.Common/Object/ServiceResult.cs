@@ -49,5 +49,11 @@ namespace Falcon.Libraries.Common.Object
             Succeeded = false;
             Message = message ?? MessageConstant.StatusError;
         }
+        public void TimeOut(string? message)
+        {
+            Code = 504;
+            Succeeded = false;
+            Message = message ?? MessageConstant.StatusTimeOut;
+        }
     }
 }

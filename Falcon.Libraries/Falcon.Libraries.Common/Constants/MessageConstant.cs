@@ -24,5 +24,6 @@
         public const string StatusForbidden = "Forbidden";
         public const string StatusNotFound = "Not Found";
         public const string StatusError = "Error";
+        public const string StatusTimeOut = "Time Out";
     }
 }
