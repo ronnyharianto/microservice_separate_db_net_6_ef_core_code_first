@@ -1,8 +1,11 @@
 ﻿using Falcon.Libraries.Microservice.Controllers;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 using System.Text.Json.Serialization;
 
 namespace Falcon.Libraries.Microservice.Startups
@@ -20,9 +23,32 @@ namespace Falcon.Libraries.Microservice.Startups
                     o.Filters.Add<TransactionFilterAttribute<TApplicationDbContext>>();
                 })
                 .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+                //.AddFluentValidation(fv => fv.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
+
+            // Add db context
             Builder.Services.AddDbContext<TApplicationDbContext>(
                 options => options.UseNpgsql(Builder.Configuration.GetConnectionString("Default"))
             );
+
+            // Add auto validation using fluentvalidation
+            Builder.Services.AddFluentValidationAutoValidation();
+
+            var callingAssembly = Assembly.GetCallingAssembly();
+            var validators = callingAssembly.GetTypes()
+                                     .Where(x => !x.IsAbstract && !x.IsInterface && typeof(IValidator).IsAssignableFrom(x))
+                                     .ToList();
+
+            foreach (var validator in validators)
+            {
+                var validatorType = validator.BaseType;
+                var interfaceType = validatorType?.GetGenericArguments().FirstOrDefault();
+
+                if (interfaceType != null)
+                {
+                    var genericValidatorType = typeof(IValidator<>).MakeGenericType(interfaceType);
+                    Builder.Services.AddScoped(genericValidatorType, validator);
+                }
+            }
         }
 
         public WebApplicationBuilder Builder { get; set; }

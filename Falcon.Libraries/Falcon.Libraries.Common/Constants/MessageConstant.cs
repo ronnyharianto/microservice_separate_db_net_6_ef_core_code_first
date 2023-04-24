@@ -2,11 +2,17 @@
 {
     public class MessageConstant
     {
-        public const string InputRequired = "{PropertyName} must be filled";
-        public const string SelectRequired = "Please Select {PropertyName}";
-        public const string Unique = "{PropertyName} has already been taken";
-        public const string ValidEmail = "{PropertyName} is not a valid email";
-        public const string General = "Please fill with the valid value";
+        public static class ValidatorMessageConstant
+        {
+            public const string FieldRequired = "{PropertyName} must be filled";
+            public const string BeUniqueValue = "{PropertyName} with value: {PropertyValue} is already exists";
+            public const string NotValidEmail = "{PropertyName} is not a valid email";
+            public const string GreaterThan = "{PropertyName} must greater than {ComparisonValue}";
+            public const string GreaterOrEqualThan = "{PropertyName} must greater or equal than {ComparisonValue}";
+            public const string LessThan = "{PropertyName} must less than {ComparisonValue}";
+            public const string LessOrEqualThan = "{PropertyName} must less or equal than {ComparisonValue}";
+            public const string MaxLength = "{PropertyName} has a maximum of {MaxLength} characters";
+        }
 
         public const string SuccessSave = "{0} has been saved";
         public const string FailedSave = "{0} failed to be save";

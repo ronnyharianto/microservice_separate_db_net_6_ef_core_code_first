@@ -22,15 +22,7 @@ namespace Falcon.BackEnd.Products.Controllers.Products
         [HttpPost("create")]
         public ObjectResult<Product> CreateProduct(ProductInput data)
         {
-            var retVal = new ObjectResult<Product>();
-
-            ProductInputValidator validator = new ProductInputValidator();
-            ValidationResult results = validator.Validate(data);
-
-            if (results.IsValid)
-            {
-                retVal = _productService.Create(data);
-            }
+            var retVal = _productService.Create(data);
 
             return retVal;
         }
