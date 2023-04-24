@@ -30,6 +30,18 @@
                     "Port": 5020
                 }
             ]
+        },
+        {
+            "UpstreamPathTemplate": "/showcase/{catchAll}",
+            "UpstreamHttpMethod": [ "Get", "Post" ],
+            "DownstreamPathTemplate": "/api/v1/showcase/{catchAll}",
+            "DownstreamScheme": "https",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5030
+                }
+            ]
         }
     ]
 }

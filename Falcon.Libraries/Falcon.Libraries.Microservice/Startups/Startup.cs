@@ -1,5 +1,4 @@
-﻿using Falcon.Libraries.Microservice.Cancellation;
-using Falcon.Libraries.Microservice.Controllers;
+﻿using Falcon.Libraries.Microservice.Controllers;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
