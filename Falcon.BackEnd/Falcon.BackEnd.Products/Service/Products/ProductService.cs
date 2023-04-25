@@ -1,4 +1,6 @@
-﻿using Falcon.BackEnd.Products.Controllers.Products.Inputs;
+﻿using AutoMapper;
+using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
+using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Domain;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.Libraries.Common.Object;
@@ -9,25 +11,20 @@ namespace Falcon.BackEnd.Products.Service.Products
 {
     public class ProductService : BaseService<ApplicationDbContext>
     {
-        public ProductService(ApplicationDbContext dbContext) : base(dbContext) { }
+        public ProductService(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper) { }
 
-        public ObjectResult<Product> Create(ProductInput data)
+        public ObjectResult<ProductDto> Create(ProductInput data)
         {
-            var retVal = new ObjectResult<Product>
+            var retVal = new ObjectResult<ProductDto>();
+            var newData = _mapper.Map<ProductInput, Product>(data);
+
+            if (newData != null)
             {
-                Obj = new Product()
-                {
-                    Code = data.Code,
-                    Name = data.Name,
-                    Remark = data.Remark,
-                    Price = data.Price,
-                    ProductValidTo = DateTime.MaxValue
-                }
-            };
+                _dbContext.Products.Add(newData);
 
-            _dbContext.Products.Add(retVal.Obj);
-
-            retVal.OK(null);
+                retVal.Obj = _mapper.Map<Product, ProductDto>(newData);
+                retVal.OK(null);
+            }
 
             return retVal;
         }

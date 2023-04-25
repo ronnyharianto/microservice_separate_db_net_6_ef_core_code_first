@@ -57,6 +57,9 @@ namespace Falcon.Libraries.Microservice.Startups
             }
 
             ConfigureKafka(callingAssembly);
+
+            // Configure Auto Mapper
+            Builder.Services.AddAutoMapper(callingAssembly);
         }
 
         public WebApplicationBuilder Builder { get; set; }

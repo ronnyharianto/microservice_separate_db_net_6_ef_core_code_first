@@ -8,7 +8,7 @@ namespace Falcon.BackEnd.Products.Domain.Models.Entities
         public string Name { get; set; } = string.Empty;
         public string? Remark { get; set; }
         public decimal Price { get; set; } = 0;
-        public DateTime ProductValidTo { get; set; }
+        public DateTime ProductValidTo { get; set; } = DateTime.MaxValue;
         public virtual List<ProductVariant> ProductVariants { get; set; } = new();
     }
 }

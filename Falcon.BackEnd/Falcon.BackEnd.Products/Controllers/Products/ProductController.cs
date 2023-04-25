@@ -1,4 +1,5 @@
-﻿using Falcon.BackEnd.Products.Controllers.Products.Inputs;
+﻿using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
+using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.BackEnd.Products.Service.Products;
 using Falcon.Libraries.Common.Object;
@@ -22,7 +23,7 @@ namespace Falcon.BackEnd.Products.Controllers.Products
         }
 
         [HttpPost("create")]
-        public ObjectResult<Product> CreateProduct(ProductInput data)
+        public ObjectResult<ProductDto> CreateProduct(ProductInput data)
         {
             var retVal = _productService.Create(data);
 
