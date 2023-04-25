@@ -1,9 +1,9 @@
 ﻿using Falcon.BackEnd.Products.Controllers.Products.Inputs;
-using Falcon.BackEnd.Products.Controllers.Products.Validators;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.BackEnd.Products.Service.Products;
 using Falcon.Libraries.Common.Object;
-using FluentValidation.Results;
+using Falcon.Models;
+using KafkaFlow.Producers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Falcon.BackEnd.Products.Controllers.Products
@@ -13,16 +13,29 @@ namespace Falcon.BackEnd.Products.Controllers.Products
     public class ProductController : Controller
     {
         private readonly ProductService _productService;
+        private readonly IProducerAccessor _producer;
 
-        public ProductController(ProductService productService)
+        public ProductController(ProductService productService, IProducerAccessor producer)
         {
             _productService = productService;
+            _producer = producer;
         }
 
         [HttpPost("create")]
         public ObjectResult<Product> CreateProduct(ProductInput data)
         {
             var retVal = _productService.Create(data);
+
+            if (retVal.Obj != null)
+            {
+                _producer.GetProducer("general-producer").ProduceAsync(nameof(ProductCreated), null, new ProductCreated
+                {
+                    ProductId = retVal.Obj.Id,
+                    ProductCode = retVal.Obj.Code,
+                    ProductName = retVal.Obj.Name,
+                    VariantNames = retVal.Obj.ProductVariants.Select(x => x.VariantName).ToList()
+                });
+            }
 
             return retVal;
         }
