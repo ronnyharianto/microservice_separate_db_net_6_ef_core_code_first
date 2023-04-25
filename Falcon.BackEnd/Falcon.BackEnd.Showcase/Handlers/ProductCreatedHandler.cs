@@ -1,4 +1,4 @@
-﻿using Falcon.Models;
+﻿using Falcon.Models.Topics;
 using KafkaFlow;
 using KafkaFlow.TypedHandler;
 

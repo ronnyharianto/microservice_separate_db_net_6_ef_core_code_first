@@ -3,7 +3,7 @@ using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.BackEnd.Products.Service.Products;
 using Falcon.Libraries.Common.Object;
-using Falcon.Models;
+using Falcon.Models.Topics;
 using KafkaFlow.Producers;
 using Microsoft.AspNetCore.Mvc;
 

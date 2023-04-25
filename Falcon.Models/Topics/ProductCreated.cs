@@ -1,4 +1,4 @@
-﻿namespace Falcon.Models
+﻿namespace Falcon.Models.Topics
 {
     public class ProductCreated
     {

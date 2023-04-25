@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Hosting;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -22,44 +22,11 @@ namespace Falcon.Libraries.Microservice.Startups
             var callingAssembly = Assembly.GetCallingAssembly();
             Builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            Builder.Services.AddControllers(
-                options => {
-                    //Add transaction filter to apply transaction scope for each request on controller
-                    options.Filters.Add<TransactionFilterAttribute<TApplicationDbContext>>();
-                })
-                .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
-            // Add db context
-            Builder.Services.AddDbContext<TApplicationDbContext>(
-                options => options.UseNpgsql(Builder.Configuration.GetConnectionString("Default"))
-            );
-
-            // Add auto validation using fluentvalidation
-            Builder.Services.AddFluentValidationAutoValidation();
-
-            // Automatic add validator to the service container
-            var validators = callingAssembly
-                                     .GetTypes()
-                                     .Where(x => !x.IsAbstract && !x.IsInterface && typeof(IValidator).IsAssignableFrom(x))
-                                     .ToList();
-
-            foreach (var validator in validators)
-            {
-                var baseType = validator.BaseType;
-                var genericArgsBaseType = baseType?.GetGenericArguments().FirstOrDefault();
-
-                if (genericArgsBaseType != null)
-                {
-                    var genericValidatorType = typeof(IValidator<>).MakeGenericType(genericArgsBaseType);
-                    Builder.Services.AddScoped(genericValidatorType, validator);
-                }
-            }
-
+            ConfigureController();
+            ConfigureDbContext();
+            ConfigureFluentValidation(callingAssembly);
             ConfigureKafka(callingAssembly);
-
-            // Configure Auto Mapper
-            Builder.Services.AddAutoMapper(callingAssembly);
+            ConfigureAutoMapper(callingAssembly);
         }
 
         public WebApplicationBuilder Builder { get; set; }
@@ -68,14 +35,18 @@ namespace Falcon.Libraries.Microservice.Startups
         {
             var app = Builder.Build();
 
-            // Migrate latest database changes during startup
             using (var scope = app.Services.CreateScope())
             {
-                var dbContext = scope.ServiceProvider
-                    .GetRequiredService<TApplicationDbContext>();
+                var dbContext = scope.ServiceProvider.GetRequiredService<TApplicationDbContext>();
 
-                //dbContext.Database.Migrate();
-                dbContext.Database.EnsureCreated();
+                if (app.Environment.IsProduction())
+                {
+                    dbContext.Database.Migrate(); 
+                }
+                else
+                {
+                    dbContext.Database.EnsureCreated();
+                }
             }
 
             try
@@ -94,9 +65,53 @@ namespace Falcon.Libraries.Microservice.Startups
             app.Run();
         }
 
+        #region Private Methods
+        private void ConfigureController()
+        {
+            // Add services to the container.
+            Builder.Services.AddControllers(
+                options => {
+                    //Add transaction filter to apply transaction scope for each request on controller
+                    options.Filters.Add<TransactionFilterAttribute<TApplicationDbContext>>();
+                })
+                .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+        }
+
+        private void ConfigureDbContext()
+        {
+            // Add db context
+            Builder.Services.AddDbContext<TApplicationDbContext>(
+                options => options.UseNpgsql(Builder.Configuration.GetConnectionString("Default"))
+            );
+        }
+
+        private void ConfigureFluentValidation(Assembly callingAssembly)
+        {
+            // Register all validator to the service container
+            var validators = callingAssembly
+                                     .GetTypes()
+                                     .Where(x => !x.IsAbstract && !x.IsInterface && typeof(IValidator).IsAssignableFrom(x))
+                                     .ToList();
+
+            foreach (var validator in validators)
+            {
+                var baseType = validator.BaseType;
+                var genericArgsBaseType = baseType?.GetGenericArguments().FirstOrDefault();
+
+                if (genericArgsBaseType != null)
+                {
+                    var genericValidatorType = typeof(IValidator<>).MakeGenericType(genericArgsBaseType);
+                    Builder.Services.AddScoped(genericValidatorType, validator);
+                }
+            }
+
+            // Run validation using fluentvalidation every request in controller
+            Builder.Services.AddFluentValidationAutoValidation();
+        }
+
         private void ConfigureKafka(Assembly callingAssembly)
         {
-            Action<IKafkaConfigurationBuilder> kafkaConfiguration = 
+            Action<IKafkaConfigurationBuilder> kafkaConfiguration =
                 kafka => kafka.AddCluster(
                     cluster => cluster.WithBrokers(new[] { "127.0.0.100:9092" })
                         .AddProducer(
@@ -138,5 +153,11 @@ namespace Falcon.Libraries.Microservice.Startups
 
             Builder.Services.AddKafka(kafkaConfiguration);
         }
+
+        private void ConfigureAutoMapper(Assembly callingAssembly)
+        {
+            Builder.Services.AddAutoMapper(callingAssembly);
+        }
+        #endregion
     }
 }
