@@ -1,0 +1,3 @@
+auth:
+  enablePostgresUser: true
+  postgresPassword: "1234qwer"

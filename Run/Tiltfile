@@ -1,0 +1,11 @@
+# local_resource(name="redis-connection",
+#     serve_cmd="kubectl port-forward --address 127.0.0.100 service/redis-headless 6379:6379 --namespace persistence")
+
+local_resource(name="kafka-connection",
+    serve_cmd="kubectl port-forward --address 127.0.0.100 service/kafka 9092:9092 --namespace persistence")
+
+# local_resource(name="elastic-connection",
+#     serve_cmd="kubectl port-forward --address 127.0.0.100 service/elasticsearch 9200:9200 --namespace persistence")
+
+local_resource(name="postgresql-connection",
+    serve_cmd="kubectl port-forward --address 127.0.0.100 service/postgresql 5432:5432 --namespace persistence")
