@@ -1,5 +1,4 @@
-﻿using Confluent.Kafka;
-using Falcon.Libraries.Microservice.Controllers;
+﻿using Falcon.Libraries.Microservice.Controllers;
 using Falcon.Libraries.Microservice.Subscriber;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -72,7 +71,7 @@ namespace Falcon.Libraries.Microservice.Startups
         {
             // Add db context
             Builder.Services.AddDbContext<TApplicationDbContext>(
-                options => options.UseNpgsql(Builder.Configuration.GetConnectionString("Default"))
+                options => options.UseNpgsql(Builder.Configuration.GetConnectionString("postgreSQL"))
             );
         }
 
@@ -102,12 +101,37 @@ namespace Falcon.Libraries.Microservice.Startups
 
         private void ConfigureKafka(Assembly callingAssembly)
         {
-            Builder.Services.AddCap(capConfig => 
-            {
-                capConfig.UseEntityFramework<TApplicationDbContext>();
+            var kafkaServer = Builder.Configuration.GetConnectionString("kafka");
 
-                capConfig.UseKafka("127.0.0.100:9092");                
-            }).AddSubscribeFilter<TransactionSubscribeFilter<TApplicationDbContext>>();
+            if (kafkaServer != null)
+            {
+                // Register all handler to the service container
+                var handlers = callingAssembly
+                                    .GetTypes()
+                                    .Where(x => !x.IsAbstract && !x.IsInterface && x.GetInterfaces().Any(i =>
+                                        i.IsGenericType && i.GetGenericTypeDefinition() == typeof(ISubsriberHandler<>))
+                                    )
+                                    .ToList();
+
+                foreach (var handler in handlers)
+                {
+                    var baseType = ((Type[])((TypeInfo)handler).ImplementedInterfaces)[0];
+                    var genericArgsBaseType = baseType?.GetGenericArguments().FirstOrDefault();
+
+                    if (genericArgsBaseType != null)
+                    {
+                        var genericValidatorType = typeof(ISubsriberHandler<>).MakeGenericType(genericArgsBaseType);
+                        Builder.Services.AddTransient(genericValidatorType, handler);
+                    }
+                }
+
+                Builder.Services.AddCap(capConfig =>
+                {
+                    capConfig.UseEntityFramework<TApplicationDbContext>();
+
+                    capConfig.UseKafka(kafkaServer);
+                }).AddSubscribeFilter<TransactionSubscribeFilter<TApplicationDbContext>>();
+            }
         }
 
         private void ConfigureAutoMapper(Assembly callingAssembly)

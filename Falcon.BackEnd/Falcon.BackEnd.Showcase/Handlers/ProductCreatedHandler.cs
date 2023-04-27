@@ -1,14 +1,10 @@
 ﻿using DotNetCore.CAP;
+using Falcon.Libraries.Microservice.Subscriber;
 using Falcon.Models.Topics;
 
-namespace Falcon.BackEnd.Showcase.Handlers
+namespace Falcon.BackEnd.Showcases.Handlers
 {
-    public interface ISubscribeHandler
-    {
-        void Handle(ProductCreated message);
-    }
-
-    public class ProductCreatedHandler : ISubscribeHandler, ICapSubscribe
+    public class ProductCreatedHandler : ISubsriberHandler<ProductCreated>
     {
         [CapSubscribe(nameof(ProductCreated))]
         public void Handle(ProductCreated message)
