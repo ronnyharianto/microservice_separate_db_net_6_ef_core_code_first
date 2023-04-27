@@ -1,10 +1,11 @@
-﻿using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
+﻿using AutoMapper;
+using DotNetCore.CAP;
+using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
 using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.BackEnd.Products.Service.Products;
 using Falcon.Libraries.Common.Object;
 using Falcon.Models.Topics;
-using KafkaFlow.Producers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Falcon.BackEnd.Products.Controllers.Products
@@ -14,12 +15,14 @@ namespace Falcon.BackEnd.Products.Controllers.Products
     public class ProductController : Controller
     {
         private readonly ProductService _productService;
-        private readonly IProducerAccessor _producer;
+        private readonly ICapPublisher _publisher;
+        private readonly IMapper _mapper;
 
-        public ProductController(ProductService productService, IProducerAccessor producer)
+        public ProductController(ProductService productService, ICapPublisher publisher, IMapper mapper)
         {
             _productService = productService;
-            _producer = producer;
+            _publisher = publisher;
+            _mapper = mapper;
         }
 
         [HttpPost("create")]
@@ -27,15 +30,9 @@ namespace Falcon.BackEnd.Products.Controllers.Products
         {
             var retVal = _productService.Create(data);
 
-            if (retVal.Obj != null)
+            if (retVal.Succeeded && retVal.Obj != null)
             {
-                _producer.GetProducer("general-producer").ProduceAsync(nameof(ProductCreated), null, new ProductCreated
-                {
-                    ProductId = retVal.Obj.Id,
-                    ProductCode = retVal.Obj.Code,
-                    ProductName = retVal.Obj.Name,
-                    VariantNames = retVal.Obj.ProductVariants.Select(x => x.VariantName).ToList()
-                });
+                _publisher.Publish(nameof(ProductCreated), _mapper.Map<ProductCreated>(retVal.Obj));
             }
 
             return retVal;

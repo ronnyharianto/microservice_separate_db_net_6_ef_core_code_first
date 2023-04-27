@@ -1,10 +1,8 @@
-﻿using Falcon.Libraries.Microservice.Controllers;
+﻿using Confluent.Kafka;
+using Falcon.Libraries.Microservice.Controllers;
+using Falcon.Libraries.Microservice.Subscriber;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using KafkaFlow;
-using KafkaFlow.Configuration;
-using KafkaFlow.Serializer;
-using KafkaFlow.TypedHandler;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -48,13 +46,6 @@ namespace Falcon.Libraries.Microservice.Startups
                     dbContext.Database.EnsureCreated();
                 }
             }
-
-            try
-            {
-                var kafkaBus = app.Services.CreateKafkaBus();
-                kafkaBus.StartAsync();
-            }
-            catch { }
 
             app.UseHttpsRedirection();
 
@@ -111,47 +102,12 @@ namespace Falcon.Libraries.Microservice.Startups
 
         private void ConfigureKafka(Assembly callingAssembly)
         {
-            Action<IKafkaConfigurationBuilder> kafkaConfiguration =
-                kafka => kafka.AddCluster(
-                    cluster => cluster.WithBrokers(new[] { "127.0.0.100:9092" })
-                        .AddProducer(
-                            "general-producer",
-                            producer => producer.DefaultTopic("general-topic")
-                                .WithAcks(Acks.All)
-                                .AddMiddlewares(m => m.AddSerializer<JsonCoreSerializer>())
-                        )
-                );
-
-            var handlers = callingAssembly.GetTypes()
-                                .Where(x => !x.IsAbstract && !x.IsInterface && typeof(IMessageHandler).IsAssignableFrom(x))
-                                .ToList();
-
-            foreach (var handler in handlers)
+            Builder.Services.AddCap(capConfig => 
             {
-                var baseType = ((Type[])((TypeInfo)handler).ImplementedInterfaces)[0];
-                var genericArgsBaseType = baseType?.GetGenericArguments().FirstOrDefault();
-                if (genericArgsBaseType != null)
-                {
-                    var topicName = genericArgsBaseType.Name;
+                capConfig.UseEntityFramework<TApplicationDbContext>();
 
-                    kafkaConfiguration +=
-                        kafka => kafka.AddCluster(
-                            cluster => cluster.WithBrokers(new[] { "127.0.0.100:9092" })
-                                .AddConsumer(
-                                    consumer => consumer.Topic(topicName)
-                                        .WithGroupId("group-id")
-                                        .WithWorkersCount(1)
-                                        .WithBufferSize(100)
-                                        .AddMiddlewares(middlewares => middlewares
-                                            .AddSerializer<JsonCoreSerializer>()
-                                            .AddTypedHandlers(h => h.AddHandlers(new List<Type> { handler }))
-                                        )
-                                )
-                        );
-                }
-            }
-
-            Builder.Services.AddKafka(kafkaConfiguration);
+                capConfig.UseKafka("127.0.0.100:9092");                
+            }).AddSubscribeFilter<TransactionSubscribeFilter<TApplicationDbContext>>();
         }
 
         private void ConfigureAutoMapper(Assembly callingAssembly)

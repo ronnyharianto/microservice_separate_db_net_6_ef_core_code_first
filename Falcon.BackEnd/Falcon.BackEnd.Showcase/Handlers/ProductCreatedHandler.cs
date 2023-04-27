@@ -1,20 +1,19 @@
-﻿using Falcon.Models.Topics;
-using KafkaFlow;
-using KafkaFlow.TypedHandler;
+﻿using DotNetCore.CAP;
+using Falcon.Models.Topics;
 
 namespace Falcon.BackEnd.Showcase.Handlers
 {
-    public class ProductCreatedHandler : IMessageHandler<ProductCreated>
+    public interface ISubscribeHandler
     {
-        public Task Handle(IMessageContext context, ProductCreated message)
-        {
-            Console.WriteLine(
-                "Partition: {0} | Offset: {1} | Message: {2}",
-                context.ConsumerContext.Partition,
-                context.ConsumerContext.Offset,
-                message.ProductCode);
+        void Handle(ProductCreated message);
+    }
 
-            return Task.CompletedTask;
+    public class ProductCreatedHandler : ISubscribeHandler, ICapSubscribe
+    {
+        [CapSubscribe(nameof(ProductCreated))]
+        public void Handle(ProductCreated message)
+        {
+            Console.WriteLine(message.ProductCode);
         }
     }
 }
