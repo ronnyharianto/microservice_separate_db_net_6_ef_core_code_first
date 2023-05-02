@@ -15,10 +15,10 @@ namespace Falcon.BackEnd.Products.Configuration
             CreateMap<Product, ProductDto>();
             CreateMap<ProductVariant, ProductVariantDto>();
             CreateMap<ProductDto, ProductCreated>()
-                .ForMember(d => d.ProductId, o => o.MapFrom(s => s.Id))
-                .ForMember(d => d.ProductCode, o => o.MapFrom(s => s.Code))
-                .ForMember(d => d.ProductName, o => o.MapFrom(s => s.Name))
-                .ForMember(d => d.VariantNames, o => o.MapFrom(s => s.ProductVariants.Select(x => x.VariantName)));
+                .ForMember(d => d.ProductId, o => o.MapFrom(s => s.Id));
+                //.ForMember(d => d.ProductCode, o => o.MapFrom(s => s.Code))
+                //.ForMember(d => d.ProductName, o => o.MapFrom(s => s.Name))
+                //.ForMember(d => d.VariantNames, o => o.MapFrom(s => s.ProductVariants.Select(x => x.VariantName)));
         }
     }
 }

@@ -1,0 +1,4 @@
+image:
+  registry: docker.io
+  repository: bitnami/redis
+  tag: 7.0.11

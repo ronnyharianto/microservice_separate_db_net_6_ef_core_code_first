@@ -1,7 +1,7 @@
-load('./kafka/Tiltfile', 'install_kafka')
-# load('./redis/Tiltfile', 'install_redis')
-load('./postgresql/Tiltfile', 'install_postgresql')
+#load('./kafka/Tiltfile', 'install_kafka')
+load('./redis/Tiltfile', 'install_redis')
+#load('./postgresql/Tiltfile', 'install_postgresql')
 
-install_kafka('persistence')
-# install_redis('persistence')
-install_postgresql('persistence')
+#install_kafka('persistence')
+install_redis('persistence')
+#install_postgresql('persistence')
