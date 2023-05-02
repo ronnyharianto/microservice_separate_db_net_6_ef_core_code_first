@@ -1,4 +1,5 @@
-﻿using Falcon.Libraries.Microservice.Controllers;
+﻿using Falcon.Libraries.DataAccess.Domain;
+using Falcon.Libraries.Microservice.Controllers;
 using Falcon.Libraries.Microservice.HttpClients;
 using Falcon.Libraries.Microservice.Subscriber;
 using FluentValidation;
@@ -14,11 +15,19 @@ using System.Text.Json.Serialization;
 
 namespace Falcon.Libraries.Microservice.Startups
 {
+    //public class ParamInput
+    //{
+    //    public string EntityName { get; set; } = string.Empty;
+    //    public Guid Key { get; set; }
+    //    public List<string[]> Relations { get; set; } = new();
+    //}
+
     public class Startup<TApplicationDbContext> where TApplicationDbContext : DbContext
     {
         public Startup(string[] args)
         {
             var callingAssembly = Assembly.GetCallingAssembly();
+            assembly = Assembly.GetCallingAssembly();
             Builder = WebApplication.CreateBuilder(args);
 
             ConfigureController();
@@ -30,7 +39,7 @@ namespace Falcon.Libraries.Microservice.Startups
 
             //Builder.Services.AddSwaggerGen();
         }
-
+        private Assembly assembly { get; set; }
         public WebApplicationBuilder Builder { get; set; }
 
         public void Run()
@@ -56,6 +65,30 @@ namespace Falcon.Libraries.Microservice.Startups
             app.UseAuthorization();
 
             app.MapControllers();
+
+            //app.MapPost("/internal/loaddata", (ParamInput input) =>
+            //{
+            //    var entities = assembly
+            //                        .GetTypes()
+            //                        .Where(x => !x.IsAbstract && !x.IsInterface && typeof(EntityBase).IsAssignableFrom(x))
+            //                        .ToList();
+
+            //    foreach (var entity in entities)
+            //    {
+            //        if (entity.Name.ToLower() == input.EntityName.ToLower())
+            //        {
+            //            using var scope = app.Services.CreateScope();
+
+            //            var dbContext = scope.ServiceProvider.GetRequiredService<TApplicationDbContext>();
+                        
+            //            var data = dbContext.Find(entity, input.Key);
+
+            //            return data;
+            //        }
+            //    }
+
+            //    return default;
+            //});
 
             //app.UseSwagger();
             //app.UseSwaggerUI();
