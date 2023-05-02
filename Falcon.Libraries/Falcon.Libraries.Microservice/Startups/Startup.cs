@@ -1,17 +1,16 @@
-﻿using Falcon.Libraries.DataAccess.Domain;
+﻿using Falcon.Libraries.Common.Converter;
+using Falcon.Libraries.Microservice.Cache;
 using Falcon.Libraries.Microservice.Controllers;
 using Falcon.Libraries.Microservice.HttpClients;
 using Falcon.Libraries.Microservice.Subscriber;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Reflection;
-using System.Text.Json.Serialization;
 
 namespace Falcon.Libraries.Microservice.Startups
 {
@@ -27,19 +26,19 @@ namespace Falcon.Libraries.Microservice.Startups
         public Startup(string[] args)
         {
             var callingAssembly = Assembly.GetCallingAssembly();
-            assembly = Assembly.GetCallingAssembly();
             Builder = WebApplication.CreateBuilder(args);
 
+            ConfigureGeneral();
             ConfigureController();
             ConfigureDbContext();
             ConfigureFluentValidation(callingAssembly);
             ConfigureKafka(callingAssembly);
             ConfigureAutoMapper(callingAssembly);
             ConfigureHttpClient();
+            ConfigureRedis();
 
             //Builder.Services.AddSwaggerGen();
         }
-        private Assembly assembly { get; set; }
         public WebApplicationBuilder Builder { get; set; }
 
         public void Run()
@@ -97,11 +96,16 @@ namespace Falcon.Libraries.Microservice.Startups
         }
 
         #region Private Methods
+        private void ConfigureGeneral()
+        {
+            Builder.Services.AddScoped<JsonHelper>();
+        }
         private void ConfigureController()
         {
             // Add services to the container.
             Builder.Services.AddControllers(
-                options => {
+                options =>
+                {
                     //Add transaction filter to apply transaction scope for each request on controller
                     options.Filters.Add<TransactionFilterAttribute<TApplicationDbContext>>();
                 })
@@ -184,6 +188,17 @@ namespace Falcon.Libraries.Microservice.Startups
         {
             Builder.Services.AddHttpContextAccessor();
             Builder.Services.AddHttpClient<CustomHttpClient>();
+        }
+
+        private void ConfigureRedis()
+        {
+            Builder.Services.AddStackExchangeRedisCache(option =>
+            {
+                option.Configuration = Builder.Configuration.GetConnectionString("redis");
+                option.InstanceName = "Falcon-Redis";
+            });
+
+            Builder.Services.AddScoped<CacheHelper>();
         }
         #endregion
     }

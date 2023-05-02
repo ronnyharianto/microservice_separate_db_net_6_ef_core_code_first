@@ -4,14 +4,20 @@ using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Domain;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.Libraries.Common.Object;
+using Falcon.Libraries.Microservice.Cache;
 using Falcon.Libraries.Microservice.Services;
 using Microsoft.EntityFrameworkCore;
+using Falcon.BackEnd.Products.Common;
 
 namespace Falcon.BackEnd.Products.Service.Products
 {
     public class ProductService : BaseService<ApplicationDbContext>
     {
-        public ProductService(ApplicationDbContext dbContext, IMapper mapper) : base(dbContext, mapper) { }
+        private readonly CacheHelper _cacheHelper;
+        public ProductService(ApplicationDbContext dbContext, IMapper mapper, CacheHelper cacheHelper) : base(dbContext, mapper) 
+        {
+            _cacheHelper = cacheHelper;
+        }
 
         public ObjectResult<ProductDto> Create(ProductInput data)
         {
@@ -31,10 +37,18 @@ namespace Falcon.BackEnd.Products.Service.Products
 
         public ObjectResult<IQueryable<Product>> GetListProducts()
         {
-            var retVal = new ObjectResult<IQueryable<Product>>
+            var cacheData = _cacheHelper.GetCacheData<List<Product>>(ApplicationConstans.CacheKey.ProductData);
+            var retVal = new ObjectResult<IQueryable<Product>>();
+            
+            if (cacheData != null)
             {
-                Obj = _dbContext.Products.Include(x => x.ProductVariants).AsQueryable()
-            };
+                retVal.Obj = cacheData.AsQueryable();
+            }
+            else
+            {
+                retVal.Obj = _dbContext.Products.Include(x => x.ProductVariants).AsQueryable();
+                _cacheHelper.SetCacheData<List<Product>>(ApplicationConstans.CacheKey.ProductData, retVal.Obj.ToList(), TimeSpan.FromMinutes(5));
+            }
             retVal.OK(null);
 
             return retVal;
