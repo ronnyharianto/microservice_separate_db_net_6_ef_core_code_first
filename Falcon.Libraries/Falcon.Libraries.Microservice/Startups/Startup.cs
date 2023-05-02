@@ -4,6 +4,7 @@ using Falcon.Libraries.Microservice.Subscriber;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,8 @@ namespace Falcon.Libraries.Microservice.Startups
             ConfigureKafka(callingAssembly);
             ConfigureAutoMapper(callingAssembly);
             ConfigureHttpClient();
+
+            //Builder.Services.AddSwaggerGen();
         }
 
         public WebApplicationBuilder Builder { get; set; }
@@ -54,6 +57,9 @@ namespace Falcon.Libraries.Microservice.Startups
 
             app.MapControllers();
 
+            //app.UseSwagger();
+            //app.UseSwaggerUI();
+
             app.Run();
         }
 
@@ -66,7 +72,7 @@ namespace Falcon.Libraries.Microservice.Startups
                     //Add transaction filter to apply transaction scope for each request on controller
                     options.Filters.Add<TransactionFilterAttribute<TApplicationDbContext>>();
                 })
-                .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+                .AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         private void ConfigureDbContext()
