@@ -1,7 +1,7 @@
 ﻿using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Domain;
 using FluentValidation;
-using static Falcon.Libraries.Common.Constants.MessageConstant;
+using static Falcon.Libraries.Common.Constants.MessageConstants;
 
 namespace Falcon.BackEnd.Products.Controllers.Products.Validators
 {

@@ -1,6 +1,6 @@
 ﻿namespace Falcon.Libraries.Common.Constants
 {
-    public static class SecurityConstant
+    public static class SecurityConstants
     {
         public const string Issuer = "Issuer";
         public const string Audience = "Audience";

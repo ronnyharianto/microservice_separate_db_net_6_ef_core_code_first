@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\Falcon.Libraries\Falcon.Libraries.Microservice\Falcon.Libraries.Microservice.csproj" />
     <ProjectReference Include="..\..\Falcon.Models\Falcon.Models.csproj" />
   </ItemGroup>

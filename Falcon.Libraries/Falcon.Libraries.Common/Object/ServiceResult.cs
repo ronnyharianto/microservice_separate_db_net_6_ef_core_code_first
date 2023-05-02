@@ -17,43 +17,43 @@ namespace Falcon.Libraries.Common.Object
         {
             Code = 200;
             Succeeded = true;
-            Message = message ?? MessageConstant.StatusOk;
+            Message = message ?? MessageConstants.StatusOk;
         }
         public void BadRequest(string? message)
         {
             Code = 400;
             Succeeded = false;
-            Message = message ?? MessageConstant.StatusBadRequest;
+            Message = message ?? MessageConstants.StatusBadRequest;
         }
         public void UnAuthorized(string? message)
         {
             Code = 401;
             Succeeded = false;
-            Message = message ?? MessageConstant.StatusUnauthorized;
+            Message = message ?? MessageConstants.StatusUnauthorized;
         }
         public void Forbidden(string? message)
         {
             Code = 403;
             Succeeded = false;
-            Message = message ?? MessageConstant.StatusForbidden;
+            Message = message ?? MessageConstants.StatusForbidden;
         }
         public void NotFound(string? message)
         {
             Code = 404;
             Succeeded = false;
-            Message = message ?? MessageConstant.StatusNotFound;
+            Message = message ?? MessageConstants.StatusNotFound;
         }
         public void Error(string? message)
         {
             Code = 500;
             Succeeded = false;
-            Message = message ?? MessageConstant.StatusError;
+            Message = message ?? MessageConstants.StatusError;
         }
         public void TimeOut(string? message)
         {
             Code = 504;
             Succeeded = false;
-            Message = message ?? MessageConstant.StatusTimeOut;
+            Message = message ?? MessageConstants.StatusTimeOut;
         }
     }
 }

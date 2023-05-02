@@ -7,7 +7,7 @@
             "UpstreamPathTemplate": "/product/{catchAll}",
             "UpstreamHttpMethod": [ "Get", "Post" ],
             "DownstreamPathTemplate": "/api/v1/product/{catchAll}",
-            "DownstreamScheme": "https",
+            "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
                 {
                     "Host": "localhost",
@@ -23,7 +23,7 @@
             "UpstreamPathTemplate": "/security/{catchAll}",
             "UpstreamHttpMethod": [ "Get", "Post" ],
             "DownstreamPathTemplate": "/api/v1/security/{catchAll}",
-            "DownstreamScheme": "https",
+            "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
                 {
                     "Host": "localhost",
@@ -35,7 +35,7 @@
             "UpstreamPathTemplate": "/showcase/{catchAll}",
             "UpstreamHttpMethod": [ "Get", "Post" ],
             "DownstreamPathTemplate": "/api/v1/showcase/{catchAll}",
-            "DownstreamScheme": "https",
+            "DownstreamScheme": "http",
             "DownstreamHostAndPorts": [
                 {
                     "Host": "localhost",

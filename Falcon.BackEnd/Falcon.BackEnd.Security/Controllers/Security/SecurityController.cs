@@ -20,7 +20,7 @@ namespace Falcon.BackEnd.Security.Controllers.Security
 
             if (input.UserName == "username" && input.Password == "password")
             {
-                var key = Encoding.ASCII.GetBytes(SecurityConstant.Key);
+                var key = Encoding.ASCII.GetBytes(SecurityConstants.Key);
 
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
@@ -31,9 +31,9 @@ namespace Falcon.BackEnd.Security.Controllers.Security
                             new Claim(JwtRegisteredClaimNames.Email, input.UserName),
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
                     }),
-                    Expires = DateTime.UtcNow.AddDays(SecurityConstant.ExpiryInDays),
-                    Issuer = SecurityConstant.Issuer,
-                    Audience = SecurityConstant.Audience,
+                    Expires = DateTime.UtcNow.AddDays(SecurityConstants.ExpiryInDays),
+                    Issuer = SecurityConstants.Issuer,
+                    Audience = SecurityConstants.Audience,
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha512Signature)
                 };
 

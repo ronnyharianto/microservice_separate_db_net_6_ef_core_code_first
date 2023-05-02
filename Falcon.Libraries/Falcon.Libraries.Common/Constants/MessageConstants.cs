@@ -1,6 +1,6 @@
 ﻿namespace Falcon.Libraries.Common.Constants
 {
-    public class MessageConstant
+    public class MessageConstants
     {
         public static class ValidatorMessageConstant
         {

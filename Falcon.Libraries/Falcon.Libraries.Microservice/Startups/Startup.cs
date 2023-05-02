@@ -1,4 +1,5 @@
 ﻿using Falcon.Libraries.Microservice.Controllers;
+using Falcon.Libraries.Microservice.HttpClients;
 using Falcon.Libraries.Microservice.Subscriber;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -24,6 +25,7 @@ namespace Falcon.Libraries.Microservice.Startups
             ConfigureFluentValidation(callingAssembly);
             ConfigureKafka(callingAssembly);
             ConfigureAutoMapper(callingAssembly);
+            ConfigureHttpClient();
         }
 
         public WebApplicationBuilder Builder { get; set; }
@@ -130,13 +132,19 @@ namespace Falcon.Libraries.Microservice.Startups
                     capConfig.UseEntityFramework<TApplicationDbContext>();
 
                     capConfig.UseKafka(kafkaServer);
-                });//.AddSubscribeFilter<TransactionSubscribeFilter<TApplicationDbContext>>();
+                }).AddSubscribeFilter<TransactionSubscribeFilter<TApplicationDbContext>>();
             }
         }
 
         private void ConfigureAutoMapper(Assembly callingAssembly)
         {
             Builder.Services.AddAutoMapper(callingAssembly);
+        }
+
+        private void ConfigureHttpClient()
+        {
+            Builder.Services.AddHttpContextAccessor();
+            Builder.Services.AddHttpClient<CustomHttpClient>();
         }
         #endregion
     }

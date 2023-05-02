@@ -11,9 +11,9 @@ namespace Falcon.Libraries.Security.JwtToken
         {
             x.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidIssuer = SecurityConstant.Issuer,
-                ValidAudience = SecurityConstant.Audience,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecurityConstant.Key)),
+                ValidIssuer = SecurityConstants.Issuer,
+                ValidAudience = SecurityConstants.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(SecurityConstants.Key)),
                 ValidateIssuerSigningKey = true,
             };
         };

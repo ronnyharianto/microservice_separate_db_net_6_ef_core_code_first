@@ -3,10 +3,9 @@ using DotNetCore.CAP;
 using Falcon.BackEnd.Showcase.Domain;
 using Falcon.BackEnd.Showcases.Domain.Models.ViewModels;
 using Falcon.Libraries.Common.Constants;
-using Falcon.Libraries.Common.Object;
+using Falcon.Libraries.Microservice.HttpClients;
 using Falcon.Libraries.Microservice.Subscriber;
 using Falcon.Models.Topics;
-using Newtonsoft.Json;
 
 namespace Falcon.BackEnd.Showcases.Handlers
 {
@@ -22,31 +21,25 @@ namespace Falcon.BackEnd.Showcases.Handlers
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly CustomHttpClient _httpClient;
 
-        public ProductCreatedHandler(ApplicationDbContext dbContext, IMapper mapper)
+        public ProductCreatedHandler(ApplicationDbContext dbContext, IMapper mapper, CustomHttpClient httpClient)
         {
             _dbContext = dbContext;
             _mapper = mapper;
+            _httpClient = httpClient;
         }   
 
         [CapSubscribe(nameof(ProductCreated))]
-        public async void Handle(ProductCreated message)
+        public void Handle(ProductCreated message)
         {
-            HttpClient httpClient = new();
-
-            Uri requestUri = new(InternalPortConstant.Products + "api/v1/product/view/" + message.ProductId.ToString());
-            HttpRequestMessage requestMessage = new(HttpMethod.Get, requestUri);
-
-            HttpResponseMessage responseMessage = httpClient.Send(requestMessage);
-            responseMessage.EnsureSuccessStatusCode();
-            string responseBody = await responseMessage.Content.ReadAsStringAsync();
-            var responseData = JsonConvert.DeserializeObject<ObjectResult<ProductResponse>>(responseBody);
-
+            string url = String.Format("{0}{1}{2}", ServiceConstants.ProductService, "api/v1/product/view/", message.ProductId.ToString());
+            var responseData = _httpClient.GetObjectResult<ProductResponse>(url);
+            
             if (responseData != null && responseData.Obj != null)
             {
                 var productViewModel = _mapper.Map<ProductViewModel>(responseData.Obj);
                 _dbContext.ProductViewModels.Add(productViewModel);
-                _dbContext.SaveChanges();
             }
         }
     }
