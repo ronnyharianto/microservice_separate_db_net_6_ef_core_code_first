@@ -1,16 +1,15 @@
 ﻿using Falcon.Libraries.Common.Object;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace Falcon.Libraries.Microservice.HttpClients
+namespace Falcon.Libraries.Common.Helper
 {
-    public class CustomHttpClient
+    public class HttpClientHelper
     {
         private readonly HttpClient _client;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CustomHttpClient(HttpClient client, IHttpContextAccessor httpContextAccessor)
+        public HttpClientHelper(HttpClient client, IHttpContextAccessor httpContextAccessor)
         {
             _client = client;
             _httpContextAccessor = httpContextAccessor;

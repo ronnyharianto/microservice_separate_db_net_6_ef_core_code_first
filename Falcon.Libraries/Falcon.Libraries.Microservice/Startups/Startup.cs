@@ -1,7 +1,5 @@
-﻿using Falcon.Libraries.Common.Converter;
-using Falcon.Libraries.Microservice.Cache;
+﻿using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Microservice.Controllers;
-using Falcon.Libraries.Microservice.HttpClients;
 using Falcon.Libraries.Microservice.Subscriber;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -51,7 +49,7 @@ namespace Falcon.Libraries.Microservice.Startups
 
                 if (app.Environment.IsProduction())
                 {
-                    dbContext.Database.Migrate(); 
+                    dbContext.Database.Migrate();
                 }
                 else
                 {
@@ -79,7 +77,7 @@ namespace Falcon.Libraries.Microservice.Startups
             //            using var scope = app.Services.CreateScope();
 
             //            var dbContext = scope.ServiceProvider.GetRequiredService<TApplicationDbContext>();
-                        
+
             //            var data = dbContext.Find(entity, input.Key);
 
             //            return data;
@@ -187,7 +185,7 @@ namespace Falcon.Libraries.Microservice.Startups
         private void ConfigureHttpClient()
         {
             Builder.Services.AddHttpContextAccessor();
-            Builder.Services.AddHttpClient<CustomHttpClient>();
+            Builder.Services.AddHttpClient<HttpClientHelper>();
         }
 
         private void ConfigureRedis()

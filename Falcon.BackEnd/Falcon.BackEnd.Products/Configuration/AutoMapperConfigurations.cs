@@ -8,7 +8,7 @@ namespace Falcon.BackEnd.Products.Configuration
 {
     public class AutoMapperConfigurations : Profile
     {
-        public AutoMapperConfigurations() 
+        public AutoMapperConfigurations()
         {
             CreateMap<ProductInput, Product>();
             CreateMap<ProductVariantInput, ProductVariant>();
@@ -16,9 +16,6 @@ namespace Falcon.BackEnd.Products.Configuration
             CreateMap<ProductVariant, ProductVariantDto>();
             CreateMap<ProductDto, ProductCreated>()
                 .ForMember(d => d.ProductId, o => o.MapFrom(s => s.Id));
-                //.ForMember(d => d.ProductCode, o => o.MapFrom(s => s.Code))
-                //.ForMember(d => d.ProductName, o => o.MapFrom(s => s.Name))
-                //.ForMember(d => d.VariantNames, o => o.MapFrom(s => s.ProductVariants.Select(x => x.VariantName)));
         }
     }
 }

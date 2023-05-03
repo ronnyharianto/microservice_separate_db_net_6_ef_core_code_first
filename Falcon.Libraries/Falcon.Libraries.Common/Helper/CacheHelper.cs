@@ -1,8 +1,6 @@
-﻿using Falcon.Libraries.Common.Converter;
-using Microsoft.Extensions.Caching.Distributed;
-using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Caching.Distributed;
 
-namespace Falcon.Libraries.Microservice.Cache
+namespace Falcon.Libraries.Common.Helper
 {
     public class CacheHelper
     {

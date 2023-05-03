@@ -14,7 +14,7 @@ namespace Falcon.BackEnd.APIGateway
             builder.Services.AddOcelot(builder.Configuration);
 
             builder.Services.AddAuthentication()
-                .AddJwtBearer("TestKey", JwtTokenOption.OptionValidation);
+                .AddJwtBearer("jwt-schema", JwtTokenOption.OptionValidation);
 
             var app = builder.Build();
 

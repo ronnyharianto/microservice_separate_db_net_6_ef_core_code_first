@@ -15,9 +15,21 @@
                 }
             ],
             "AuthenticationOptions": {
-                "AuthenticationProviderKey": "TestKey",
+                "AuthenticationProviderKey": "jwt-schema",
                 "AllowedScopes": []
             }
+        },
+        {
+            "UpstreamPathTemplate": "/security/login",
+            "UpstreamHttpMethod": [ "Get", "Post" ],
+            "DownstreamPathTemplate": "/api/v1/security/login",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5020
+                }
+            ]
         },
         {
             "UpstreamPathTemplate": "/security/{catchAll}",
@@ -29,7 +41,11 @@
                     "Host": "localhost",
                     "Port": 5020
                 }
-            ]
+            ],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "jwt-schema",
+                "AllowedScopes": []
+            }
         },
         {
             "UpstreamPathTemplate": "/showcase/{catchAll}",
@@ -41,7 +57,11 @@
                     "Host": "localhost",
                     "Port": 5030
                 }
-            ]
+            ],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "jwt-schema",
+                "AllowedScopes": []
+            }
         }
     ]
 }

@@ -1,20 +1,20 @@
 ﻿using AutoMapper;
+using Falcon.BackEnd.Products.Common;
 using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
 using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Domain;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
+using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Common.Object;
-using Falcon.Libraries.Microservice.Cache;
 using Falcon.Libraries.Microservice.Services;
 using Microsoft.EntityFrameworkCore;
-using Falcon.BackEnd.Products.Common;
 
 namespace Falcon.BackEnd.Products.Service.Products
 {
     public class ProductService : BaseService<ApplicationDbContext>
     {
         private readonly CacheHelper _cacheHelper;
-        public ProductService(ApplicationDbContext dbContext, IMapper mapper, CacheHelper cacheHelper) : base(dbContext, mapper) 
+        public ProductService(ApplicationDbContext dbContext, IMapper mapper, CacheHelper cacheHelper) : base(dbContext, mapper)
         {
             _cacheHelper = cacheHelper;
         }
@@ -39,7 +39,7 @@ namespace Falcon.BackEnd.Products.Service.Products
         {
             var cacheData = _cacheHelper.GetCacheData<List<Product>>(ApplicationConstans.CacheKey.ProductData);
             var retVal = new ObjectResult<IQueryable<Product>>();
-            
+
             if (cacheData != null)
             {
                 retVal.Obj = cacheData.AsQueryable();

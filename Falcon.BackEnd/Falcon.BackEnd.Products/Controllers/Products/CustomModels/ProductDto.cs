@@ -1,6 +1,4 @@
-﻿using Falcon.BackEnd.Products.Domain.Models.Entities;
-
-namespace Falcon.BackEnd.Products.Controllers.Products.CustomModels
+﻿namespace Falcon.BackEnd.Products.Controllers.Products.CustomModels
 {
     public class ProductDto
     {

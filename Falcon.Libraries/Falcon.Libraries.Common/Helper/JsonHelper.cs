@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Falcon.Libraries.Common.Converter
+namespace Falcon.Libraries.Common.Helper
 {
     public class JsonHelper
     {
