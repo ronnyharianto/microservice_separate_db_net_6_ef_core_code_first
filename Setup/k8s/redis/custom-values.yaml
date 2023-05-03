@@ -2,3 +2,5 @@ image:
   registry: docker.io
   repository: bitnami/redis
   tag: 7.0.11
+auth:
+  password: SzayB3Nz5I
