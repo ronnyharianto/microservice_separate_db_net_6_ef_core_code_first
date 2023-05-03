@@ -54,6 +54,18 @@ namespace Falcon.BackEnd.Products.Service.Products
             return retVal;
         }
 
+        public ObjectResult<IQueryable<Product>> GetListAllProducts()
+        {
+            var retVal = new ObjectResult<IQueryable<Product>>()
+            {
+                Obj = _dbContext.Products.Include(x => x.ProductVariants).IgnoreQueryFilters().AsQueryable()
+            };
+            retVal.OK(null);
+
+            return retVal;
+        }
+
+
         public ObjectResult<Product> GetDetailProduct(Guid id)
         {
             var retVal = new ObjectResult<Product>

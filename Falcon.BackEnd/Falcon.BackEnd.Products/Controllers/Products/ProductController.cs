@@ -44,6 +44,12 @@ namespace Falcon.BackEnd.Products.Controllers.Products
             return _productService.GetListProducts();
         }
 
+        [HttpGet("viewalllist")]
+        public ObjectResult<IQueryable<Product>> LoadAllProductLists()
+        {
+            return _productService.GetListAllProducts();
+        }
+
         [HttpGet("view/{id}")]
         public ObjectResult<Product> LoadProductDetail(Guid id)
         {

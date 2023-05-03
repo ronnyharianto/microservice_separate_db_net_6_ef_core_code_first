@@ -14,6 +14,9 @@ namespace Falcon.Libraries.DataAccess.Domain
             builder
                 .Property(e => e.Modified)
                 .HasColumnType("timestamp without time zone");
+
+            builder
+                .HasQueryFilter(e => e.RowStatus == 0);
         }
     }
 }
