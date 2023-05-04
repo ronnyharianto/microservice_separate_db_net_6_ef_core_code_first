@@ -173,6 +173,8 @@ namespace Falcon.Libraries.Microservice.Startups
                     capConfig.UseEntityFramework<TApplicationDbContext>();
 
                     capConfig.UseKafka(kafkaServer);
+
+                    capConfig.UseDashboard();
                 }).AddSubscribeFilter<TransactionSubscribeFilter<TApplicationDbContext>>();
             }
         }
