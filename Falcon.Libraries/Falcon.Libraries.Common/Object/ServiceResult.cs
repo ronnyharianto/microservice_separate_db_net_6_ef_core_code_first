@@ -7,7 +7,7 @@ namespace Falcon.Libraries.Common.Object
     {
         public ServiceResult(ServiceResultCode resultCode, string? message = null)
         {
-            switch(resultCode)
+            switch (resultCode)
             {
                 case ServiceResultCode.Ok:
                     OK(message);
@@ -37,7 +37,7 @@ namespace Falcon.Libraries.Common.Object
                     Error(message);
                     break;
 
-                default: 
+                default:
                     break;
             }
         }

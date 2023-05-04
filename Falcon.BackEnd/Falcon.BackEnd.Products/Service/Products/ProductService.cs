@@ -48,7 +48,7 @@ namespace Falcon.BackEnd.Products.Service.Products
             else
             {
                 retVal.Obj = _dbContext.Products.Include(x => x.ProductVariants).AsQueryable();
-                _cacheHelper.SetCacheData<List<Product>>(ApplicationConstans.CacheKey.ProductData, retVal.Obj.ToList(), TimeSpan.FromMinutes(5));
+                _cacheHelper.SetCacheData(ApplicationConstans.CacheKey.ProductData, retVal.Obj.ToList(), TimeSpan.FromMinutes(5));
             }
             retVal.OK(null);
 
