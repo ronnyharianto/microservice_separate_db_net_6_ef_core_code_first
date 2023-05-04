@@ -4,6 +4,7 @@ using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
 using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Domain;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
+using Falcon.Libraries.Common.Enums;
 using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Common.Object;
 using Falcon.Libraries.Microservice.Services;
@@ -21,7 +22,7 @@ namespace Falcon.BackEnd.Products.Service.Products
 
         public ObjectResult<ProductDto> Create(ProductInput data)
         {
-            var retVal = new ObjectResult<ProductDto>();
+            var retVal = new ObjectResult<ProductDto>(ServiceResultCode.BadRequest);
             var newData = _mapper.Map<ProductInput, Product>(data);
 
             if (newData != null)
@@ -38,7 +39,7 @@ namespace Falcon.BackEnd.Products.Service.Products
         public ObjectResult<IQueryable<Product>> GetListProducts()
         {
             var cacheData = _cacheHelper.GetCacheData<List<Product>>(ApplicationConstans.CacheKey.ProductData);
-            var retVal = new ObjectResult<IQueryable<Product>>();
+            var retVal = new ObjectResult<IQueryable<Product>>(ServiceResultCode.BadRequest);
 
             if (cacheData != null)
             {
@@ -56,7 +57,7 @@ namespace Falcon.BackEnd.Products.Service.Products
 
         public ObjectResult<IQueryable<Product>> GetListAllProducts()
         {
-            var retVal = new ObjectResult<IQueryable<Product>>()
+            var retVal = new ObjectResult<IQueryable<Product>>(ServiceResultCode.BadRequest)
             {
                 Obj = _dbContext.Products.Include(x => x.ProductVariants).IgnoreQueryFilters().AsQueryable()
             };
@@ -68,11 +69,10 @@ namespace Falcon.BackEnd.Products.Service.Products
 
         public ObjectResult<Product> GetDetailProduct(Guid id)
         {
-            var retVal = new ObjectResult<Product>
+            var retVal = new ObjectResult<Product>(ServiceResultCode.Ok)
             {
                 Obj = _dbContext.Products.Include(x => x.ProductVariants).Where(x => x.Id == id).FirstOrDefault()
             };
-            retVal.OK(null);
 
             return retVal;
         }

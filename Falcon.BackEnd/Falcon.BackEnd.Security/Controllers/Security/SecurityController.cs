@@ -1,5 +1,6 @@
 ﻿using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.Libraries.Common.Constants;
+using Falcon.Libraries.Common.Enums;
 using Falcon.Libraries.Common.Object;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -16,7 +17,7 @@ namespace Falcon.BackEnd.Security.Controllers.Security
         [HttpPost("login")]
         public ObjectResult<string> Login(LoginInput input)
         {
-            var retVal = new ObjectResult<string>();
+            var retVal = new ObjectResult<string>(ServiceResultCode.BadRequest);
 
             if (input.UserName == "username" && input.Password == "password")
             {
