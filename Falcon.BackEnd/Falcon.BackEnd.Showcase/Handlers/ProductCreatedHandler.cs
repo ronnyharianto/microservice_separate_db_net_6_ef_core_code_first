@@ -31,7 +31,7 @@ namespace Falcon.BackEnd.Showcases.Handlers
         }
 
         [CapSubscribe(nameof(ProductCreated))]
-        public void Handle(ProductCreated message)
+        public object Handle(ProductCreated message)
         {
             string url = String.Format("{0}{1}{2}", ServiceConstants.ProductService, "api/v1/product/view/", message.ProductId.ToString());
             var responseData = _httpClient.GetObjectResult<ProductResponse>(url);
@@ -40,7 +40,11 @@ namespace Falcon.BackEnd.Showcases.Handlers
             {
                 var productViewModel = _mapper.Map<ProductViewModel>(responseData.Obj);
                 _dbContext.ProductViewModels.Add(productViewModel);
+
+                return new { ProductId = productViewModel.Id, IsSuccess = true };
             }
+
+            return new { ProductId = Guid.Empty, IsSuccess = false };
         }
     }
 }

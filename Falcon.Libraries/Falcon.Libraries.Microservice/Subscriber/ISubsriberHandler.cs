@@ -4,6 +4,6 @@ namespace Falcon.Libraries.Microservice.Subscriber
 {
     public interface ISubsriberHandler<in T> : ICapSubscribe
     {
-        void Handle(T message);
+        object Handle(T message);
     }
 }

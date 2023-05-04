@@ -32,7 +32,7 @@ namespace Falcon.BackEnd.Products.Controllers.Products
 
             if (retVal.Succeeded && retVal.Obj != null)
             {
-                _publisher.Publish(nameof(ProductCreated), _mapper.Map<ProductCreated>(retVal.Obj));
+                _publisher.Publish(nameof(ProductCreated), _mapper.Map<ProductCreated>(retVal.Obj), nameof(ProductCreated) + "Result");
             }
 
             return retVal;
