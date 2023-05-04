@@ -8,6 +8,7 @@ using Falcon.Libraries.Common.Enums;
 using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Common.Object;
 using Falcon.Libraries.Microservice.Services;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Falcon.BackEnd.Products.Service.Products
@@ -36,7 +37,79 @@ namespace Falcon.BackEnd.Products.Service.Products
             return retVal;
         }
 
-        public ObjectResult<IQueryable<Product>> GetListProducts()
+		public ServiceResult DeleteProduct(Guid Id)
+		{
+			var retval = new ServiceResult(ServiceResultCode.Ok);
+
+			var deleteDataProduct = _dbContext.Products.FirstOrDefault(x => x.Id == Id);
+			var deleteDataProductVariant = _dbContext.ProductVariants.Where(x => x.ProductId == Id).ToList();
+
+			if (deleteDataProduct != null)
+			{
+				deleteDataProduct.RowStatus = 1;
+
+				if (deleteDataProductVariant != null)
+				{
+					foreach (var det in deleteDataProductVariant)
+					{
+						det.RowStatus = 1;
+					}
+				}
+
+				retval.OK(null);
+			}
+			return retval;
+		}
+
+		public ServiceResult DeleteProductVariant(Guid Id)
+		{
+			var retval = new ServiceResult(ServiceResultCode.Ok);
+
+			var deleteDataProductVariant = _dbContext.ProductVariants.FirstOrDefault(x => x.Id == Id);
+
+			if (deleteDataProductVariant != null)
+			{
+				deleteDataProductVariant.RowStatus = 1;
+
+				retval.OK(null);
+			}
+			return retval;
+		}
+
+		public ServiceResult UpdateProduct(Guid Id, ProductUpdate productUpdate)
+		{
+			var retval = new ServiceResult(ServiceResultCode.Ok);
+
+			var updateDataProduct = _dbContext.Products.FirstOrDefault(x => x.Id == Id);
+
+			if (updateDataProduct != null)
+			{
+				updateDataProduct.Code = productUpdate.Code;
+				updateDataProduct.Name = productUpdate.Name;
+				updateDataProduct.Remark = productUpdate.Remark;
+				updateDataProduct.Price = productUpdate.Price;
+
+				retval.OK(null);
+			}
+			return retval;
+		}
+
+		public ServiceResult UpdateProductVariant(Guid Id, ProductVariantUpdate productVariantUpdate)
+		{
+			var retval = new ServiceResult(ServiceResultCode.Ok);
+
+			var updateDataProductVariant = _dbContext.ProductVariants.FirstOrDefault(x => x.Id == Id);
+
+			if (updateDataProductVariant != null)
+			{
+				updateDataProductVariant.VariantName = productVariantUpdate.VariantName;
+
+				retval.OK(null);
+			}
+			return retval;
+		}
+
+		public ObjectResult<IQueryable<Product>> GetListProducts()
         {
             var cacheData = _cacheHelper.GetCacheData<List<Product>>(ApplicationConstans.CacheKey.ProductData);
             var retVal = new ObjectResult<IQueryable<Product>>(ServiceResultCode.BadRequest);

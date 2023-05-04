@@ -38,7 +38,39 @@ namespace Falcon.BackEnd.Products.Controllers.Products
             return retVal;
         }
 
-        [HttpGet("viewlist")]
+		[HttpPost("DeleteProduct")]
+		public ServiceResult DeleteProduct(Guid Id)
+		{
+			var retVal = _productService.DeleteProduct(Id);
+
+			return retVal;
+		}
+
+		[HttpPost("DeleteProductVariant")]
+		public ServiceResult DeleteProductVariant(Guid Id)
+		{
+			var retVal = _productService.DeleteProductVariant(Id);
+
+			return retVal;
+		}
+
+		[HttpPost("UpdateProduct")]
+		public ServiceResult UpdateProduct(Guid Id, ProductUpdate productUpdate)
+		{
+			var retVal = _productService.UpdateProduct(Id, productUpdate);
+
+			return retVal;
+		}
+
+		[HttpPost("UpdateProductVariant")]
+		public ServiceResult UpdateProductVariant(Guid Id, ProductVariantUpdate productVariantUpdate)
+		{
+			var retVal = _productService.UpdateProductVariant(Id, productVariantUpdate);
+
+			return retVal;
+		}
+
+		[HttpGet("viewlist")]
         public ObjectResult<IQueryable<Product>> LoadProductLists()
         {
             return _productService.GetListProducts();
