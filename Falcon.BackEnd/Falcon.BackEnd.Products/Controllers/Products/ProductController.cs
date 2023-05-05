@@ -2,6 +2,7 @@
 using DotNetCore.CAP;
 using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
 using Falcon.BackEnd.Products.Controllers.Products.Inputs;
+using Falcon.BackEnd.Products.Controllers.Products.Update;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.BackEnd.Products.Service.Products;
 using Falcon.Libraries.Common.Object;
@@ -38,7 +39,7 @@ namespace Falcon.BackEnd.Products.Controllers.Products
             return retVal;
         }
 
-		[HttpPost("DeleteProduct")]
+		[HttpPost("deleteproduct")]
 		public ServiceResult DeleteProduct(Guid Id)
 		{
 			var retVal = _productService.DeleteProduct(Id);
@@ -46,7 +47,7 @@ namespace Falcon.BackEnd.Products.Controllers.Products
 			return retVal;
 		}
 
-		[HttpPost("DeleteProductVariant")]
+		[HttpPost("deleteproductvariant")]
 		public ServiceResult DeleteProductVariant(Guid Id)
 		{
 			var retVal = _productService.DeleteProductVariant(Id);
@@ -54,7 +55,7 @@ namespace Falcon.BackEnd.Products.Controllers.Products
 			return retVal;
 		}
 
-		[HttpPost("UpdateProduct")]
+		[HttpPost("updateproduct")]
 		public ServiceResult UpdateProduct(Guid Id, ProductUpdate productUpdate)
 		{
 			var retVal = _productService.UpdateProduct(Id, productUpdate);
@@ -62,7 +63,7 @@ namespace Falcon.BackEnd.Products.Controllers.Products
 			return retVal;
 		}
 
-		[HttpPost("UpdateProductVariant")]
+		[HttpPost("updateproductvariant")]
 		public ServiceResult UpdateProductVariant(Guid Id, ProductVariantUpdate productVariantUpdate)
 		{
 			var retVal = _productService.UpdateProductVariant(Id, productVariantUpdate);

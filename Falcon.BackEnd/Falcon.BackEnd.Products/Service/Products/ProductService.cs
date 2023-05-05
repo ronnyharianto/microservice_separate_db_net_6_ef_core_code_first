@@ -2,6 +2,7 @@
 using Falcon.BackEnd.Products.Common;
 using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
 using Falcon.BackEnd.Products.Controllers.Products.Inputs;
+using Falcon.BackEnd.Products.Controllers.Products.Update;
 using Falcon.BackEnd.Products.Domain;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.Libraries.Common.Enums;
@@ -39,7 +40,7 @@ namespace Falcon.BackEnd.Products.Service.Products
 
 		public ServiceResult DeleteProduct(Guid Id)
 		{
-			var retval = new ServiceResult(ServiceResultCode.Ok);
+			var retval = new ServiceResult(ServiceResultCode.Error);
 
 			var deleteDataProduct = _dbContext.Products.FirstOrDefault(x => x.Id == Id);
 			var deleteDataProductVariant = _dbContext.ProductVariants.Where(x => x.ProductId == Id).ToList();
@@ -63,7 +64,7 @@ namespace Falcon.BackEnd.Products.Service.Products
 
 		public ServiceResult DeleteProductVariant(Guid Id)
 		{
-			var retval = new ServiceResult(ServiceResultCode.Ok);
+			var retval = new ServiceResult(ServiceResultCode.Error);
 
 			var deleteDataProductVariant = _dbContext.ProductVariants.FirstOrDefault(x => x.Id == Id);
 
@@ -78,16 +79,24 @@ namespace Falcon.BackEnd.Products.Service.Products
 
 		public ServiceResult UpdateProduct(Guid Id, ProductUpdate productUpdate)
 		{
-			var retval = new ServiceResult(ServiceResultCode.Ok);
+			var retval = new ServiceResult(ServiceResultCode.NotFound);
 
-			var updateDataProduct = _dbContext.Products.FirstOrDefault(x => x.Id == Id);
+			var searchDataProduct = _dbContext.Products.FirstOrDefault(x => x.Id == Id);
 
-			if (updateDataProduct != null)
+			if (searchDataProduct != null)
 			{
-				updateDataProduct.Code = productUpdate.Code;
-				updateDataProduct.Name = productUpdate.Name;
-				updateDataProduct.Remark = productUpdate.Remark;
-				updateDataProduct.Price = productUpdate.Price;
+				//_mapper.Map<ProductUpdate, Product>(productUpdate, searchDataProduct);
+
+				_mapper.Map(productUpdate, searchDataProduct);
+
+				//updateDataProduct.Code = productUpdate.Code;
+				//updateDataProduct.Name = productUpdate.Name;
+				//updateDataProduct.Remark = productUpdate.Remark;
+				//updateDataProduct.Price = productUpdate.Price;
+
+				//var UpdateData = _mapper.Map<Product, ProductDto>(UpdateDataProduct);
+
+				_dbContext.Products.Update(searchDataProduct);
 
 				retval.OK(null);
 			}
@@ -96,7 +105,7 @@ namespace Falcon.BackEnd.Products.Service.Products
 
 		public ServiceResult UpdateProductVariant(Guid Id, ProductVariantUpdate productVariantUpdate)
 		{
-			var retval = new ServiceResult(ServiceResultCode.Ok);
+			var retval = new ServiceResult(ServiceResultCode.NotFound);
 
 			var updateDataProductVariant = _dbContext.ProductVariants.FirstOrDefault(x => x.Id == Id);
 
