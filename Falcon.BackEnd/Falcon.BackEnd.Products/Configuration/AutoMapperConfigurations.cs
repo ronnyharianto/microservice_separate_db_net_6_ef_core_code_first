@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
 using Falcon.BackEnd.Products.Controllers.Products.Inputs;
-using Falcon.BackEnd.Products.Controllers.Products.Update;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.Models.Topics;
 
@@ -18,7 +17,10 @@ namespace Falcon.BackEnd.Products.Configuration
             CreateMap<ProductDto, ProductCreated>()
                 .ForMember(d => d.ProductId, o => o.MapFrom(s => s.Id));
 
-			CreateMap<ProductUpdate, Product>();
+			CreateMap<ProductUpdate, Product>()
+				.ForMember(x => x.Code, opt => opt.Ignore());
+
+            //CreateMap<ProductUpdate, Product>();
 		}
     }
 }

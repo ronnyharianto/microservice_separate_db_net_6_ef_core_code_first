@@ -2,7 +2,6 @@
 using Falcon.BackEnd.Products.Common;
 using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
 using Falcon.BackEnd.Products.Controllers.Products.Inputs;
-using Falcon.BackEnd.Products.Controllers.Products.Update;
 using Falcon.BackEnd.Products.Domain;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.Libraries.Common.Enums;

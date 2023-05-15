@@ -2,7 +2,6 @@
 using DotNetCore.CAP;
 using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
 using Falcon.BackEnd.Products.Controllers.Products.Inputs;
-using Falcon.BackEnd.Products.Controllers.Products.Update;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.BackEnd.Products.Service.Products;
 using Falcon.Libraries.Common.Object;
@@ -43,6 +42,11 @@ namespace Falcon.BackEnd.Products.Controllers.Products
 		public ServiceResult DeleteProduct(Guid Id)
 		{
 			var retVal = _productService.DeleteProduct(Id);
+
+			if (retVal.Succeeded)
+			{
+				_publisher.Publish(nameof(ProductDeleted), retVal.Id, nameof(ProductDeleted) + "Result");
+			}
 
 			return retVal;
 		}
