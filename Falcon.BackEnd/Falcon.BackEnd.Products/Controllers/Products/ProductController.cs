@@ -43,9 +43,14 @@ namespace Falcon.BackEnd.Products.Controllers.Products
 		{
 			var retVal = _productService.DeleteProduct(Id);
 
+            ProductDeleted productDeleted = new ProductDeleted
+            {
+                ProductId = Id
+			};
+
 			if (retVal.Succeeded)
 			{
-				_publisher.Publish(nameof(ProductDeleted), retVal.Id, nameof(ProductDeleted) + "Result");
+				_publisher.Publish(nameof(ProductDeleted), productDeleted, nameof(ProductDeleted) + "Result");
 			}
 
 			return retVal;
@@ -63,6 +68,18 @@ namespace Falcon.BackEnd.Products.Controllers.Products
 		public ServiceResult UpdateProduct(Guid Id, ProductUpdate productUpdate)
 		{
 			var retVal = _productService.UpdateProduct(Id, productUpdate);
+
+			ProductUpdated productUpdated = new ProductUpdated
+			{
+                ProductId = Id,
+				Name = productUpdate.Name,
+                Remark = productUpdate.Remark
+			};
+
+			if (retVal.Succeeded)
+			{
+				_publisher.Publish(nameof(ProductUpdated), productUpdated, nameof(ProductUpdated) + "Result");
+			}
 
 			return retVal;
 		}

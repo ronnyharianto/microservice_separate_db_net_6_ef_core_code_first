@@ -9,28 +9,28 @@ using System.Text.Json;
 
 namespace Falcon.BackEnd.Products.Handlers
 {
-    public class ProductDeletedResponse
+    public class ProductUpdatedResponse
     {
-        public Guid Id { get; set; }
+        public Guid ProductId { get; set; }
         //public string Code { get; set; } = string.Empty;
-        //public string Name { get; set; } = string.Empty;
-        //public string? Remark { get; set; }
-    }
+        public string Name { get; set; } = string.Empty;
+        public string? Remark { get; set; }
+	}
 
-    public class ProductDeletedHandler : ISubsriberHandler<JsonElement>
+    public class ProductUpdatedHandler : ISubsriberHandler<JsonElement>
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly HttpClientHelper _httpClient;
 
-        public ProductDeletedHandler(ApplicationDbContext dbContext, IMapper mapper, HttpClientHelper httpClient)
+        public ProductUpdatedHandler(ApplicationDbContext dbContext, IMapper mapper, HttpClientHelper httpClient)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _httpClient = httpClient;
         }
 
-        [CapSubscribe(nameof(ProductDeleted) + "Result")]
+        [CapSubscribe(nameof(ProductUpdated) + "Result")]
         public object Handle(JsonElement param)
         {
             var productId = param.GetProperty("ProductId").GetGuid();

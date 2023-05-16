@@ -10,32 +10,32 @@ using Falcon.Models.Topics;
 
 namespace Falcon.BackEnd.Showcases.Handlers
 {
-    public class ProductDeletedResponse
+    public class ProductUpdatedResponse
     {
         public Guid Id { get; set; }
-        //public string Code { get; set; } = string.Empty;
-        //public string Name { get; set; } = string.Empty;
-        //public string? Remark { get; set; }
+        public string Code { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string? Remark { get; set; }
     }
 
-    public class ProductDeletedHandler : ISubsriberHandler<ProductDeleted>
+    public class ProductUpdatedHandler : ISubsriberHandler<ProductUpdated>
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly HttpClientHelper _httpClient;
 
-        public ProductDeletedHandler(ApplicationDbContext dbContext, IMapper mapper, HttpClientHelper httpClient)
+        public ProductUpdatedHandler(ApplicationDbContext dbContext, IMapper mapper, HttpClientHelper httpClient)
         {
             _dbContext = dbContext;
             _mapper = mapper;
             _httpClient = httpClient;
         }
 
-        [CapSubscribe(nameof(ProductDeleted))]
-        public object Handle(ProductDeleted message)
+        [CapSubscribe(nameof(ProductUpdated))]
+        public object Handle(ProductUpdated message)
         {
             string url = String.Format("{0}{1}{2}", ServiceConstants.ProductService, "api/v1/product/view/", message.ProductId.ToString());
-            var responseData = _httpClient.GetObjectResult<ProductDeletedResponse>(url);
+            var responseData = _httpClient.GetObjectResult<ProductUpdatedResponse>(url);
 
             if (responseData != null && responseData.Id != Guid.Empty)
             {
@@ -43,7 +43,8 @@ namespace Falcon.BackEnd.Showcases.Handlers
 
 				if (searchDataProduct != null)
 				{
-                    searchDataProduct.RowStatus = 1;
+                    searchDataProduct.Name = message.Name;
+                    searchDataProduct.Remark = message.Remark;
 				}
 
                 return new { ProductId = responseData.Id, IsSuccess = true };
