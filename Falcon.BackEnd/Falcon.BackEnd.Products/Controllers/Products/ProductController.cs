@@ -65,15 +65,13 @@ namespace Falcon.BackEnd.Products.Controllers.Products
 		}
 
 		[HttpPost("updateproduct")]
-		public ServiceResult UpdateProduct(Guid Id, ProductUpdate productUpdate)
+		public ServiceResult UpdateProduct(ProductUpdate productUpdate)
 		{
-			var retVal = _productService.UpdateProduct(Id, productUpdate);
+			var retVal = _productService.UpdateProduct(productUpdate);
 
 			ProductUpdated productUpdated = new ProductUpdated
 			{
-                ProductId = Id,
-				Name = productUpdate.Name,
-                Remark = productUpdate.Remark
+                ProductId = productUpdate.Id
 			};
 
 			if (retVal.Succeeded)

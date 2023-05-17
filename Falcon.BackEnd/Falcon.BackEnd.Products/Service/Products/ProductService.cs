@@ -76,24 +76,15 @@ namespace Falcon.BackEnd.Products.Service.Products
 			return retval;
 		}
 
-		public ServiceResult UpdateProduct(Guid Id, ProductUpdate productUpdate)
+		public ServiceResult UpdateProduct(ProductUpdate productUpdate)
 		{
 			var retval = new ServiceResult(ServiceResultCode.NotFound);
 
-			var searchDataProduct = _dbContext.Products.FirstOrDefault(x => x.Id == Id);
+			var searchDataProduct = _dbContext.Products.FirstOrDefault(x => x.Id == productUpdate.Id);
 
 			if (searchDataProduct != null)
 			{
-				//_mapper.Map<ProductUpdate, Product>(productUpdate, searchDataProduct);
-
 				_mapper.Map(productUpdate, searchDataProduct);
-
-				//updateDataProduct.Code = productUpdate.Code;
-				//updateDataProduct.Name = productUpdate.Name;
-				//updateDataProduct.Remark = productUpdate.Remark;
-				//updateDataProduct.Price = productUpdate.Price;
-
-				//var UpdateData = _mapper.Map<Product, ProductDto>(UpdateDataProduct);
 
 				_dbContext.Products.Update(searchDataProduct);
 

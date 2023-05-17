@@ -37,14 +37,14 @@ namespace Falcon.BackEnd.Showcases.Handlers
             string url = String.Format("{0}{1}{2}", ServiceConstants.ProductService, "api/v1/product/view/", message.ProductId.ToString());
             var responseData = _httpClient.GetObjectResult<ProductUpdatedResponse>(url);
 
-            if (responseData != null && responseData.Id != Guid.Empty)
+            if (responseData != null && responseData.Obj != null && responseData.Id != Guid.Empty)
             {
 				var searchDataProduct = _dbContext.ProductViewModels.FirstOrDefault(x => x.Id == message.ProductId);
 
 				if (searchDataProduct != null)
 				{
-                    searchDataProduct.Name = message.Name;
-                    searchDataProduct.Remark = message.Remark;
+                    searchDataProduct.Name = responseData.Obj.Name;
+                    searchDataProduct.Remark = responseData.Obj.Remark;
 				}
 
                 return new { ProductId = responseData.Id, IsSuccess = true };
