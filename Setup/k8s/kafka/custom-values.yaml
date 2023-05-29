@@ -1,4 +1,0 @@
-image:
-  registry: docker.io
-  repository: bitnami/kafka
-  tag: 3.1.0

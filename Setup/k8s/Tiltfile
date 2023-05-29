@@ -1,7 +1,9 @@
-#load('./kafka/Tiltfile', 'install_kafka')
+load('./kafka/Tiltfile', 'install_kafka')
 load('./redis/Tiltfile', 'install_redis')
-#load('./postgresql/Tiltfile', 'install_postgresql')
+load('./postgresql/Tiltfile', 'install_postgresql')
+load('./elasticsearch/Tiltfile', 'install_elasticsearch')
 
-#install_kafka('persistence')
+install_kafka('persistence')
 install_redis('persistence')
-#install_postgresql('persistence')
+install_postgresql('persistence')
+install_elasticsearch('persistence')

@@ -6,3 +6,9 @@ local_resource(name="kafka-connection",
 
 local_resource(name="postgresql-connection",
     serve_cmd="kubectl port-forward --address 127.0.0.100 service/postgresql 5432:5432 --namespace persistence")
+
+local_resource(name="elasticsearch-connection",
+    serve_cmd="kubectl port-forward --address 127.0.0.100 service/elasticsearch 9200:9200 --namespace persistence")
+
+local_resource(name="kibana-connection",
+    serve_cmd="kubectl port-forward --address 127.0.0.100 service/kibana 5601:5601 --namespace persistence")
