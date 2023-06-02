@@ -36,6 +36,30 @@ namespace Falcon.BackEnd.Products.Service.Products
 
             return retVal;
         }
+        
+        public ObjectResult<List<VariantProductDto>> CreateListVariant(VariantProductInput data)
+        {
+            var retVal = new ObjectResult<List<VariantProductDto>>(ServiceResultCode.BadRequest);
+            var getProductId = _dbContext.Products.Where(p => p.Id == data.ProductId).FirstOrDefault();
+
+            if (getProductId == null) return retVal;
+
+            var newData = _mapper.Map<List<ProductVariant>>(data.ProductVariants);
+
+            if (newData != null)
+            {
+                foreach(var v in newData)
+                {
+                    _dbContext.ProductVariants.Add(v);
+                    v.ProductId = data.ProductId;
+                }
+
+                retVal.Obj = _mapper.Map<List<VariantProductDto>>(newData);
+                retVal.OK(null);
+            }
+
+            return retVal;
+        }
 
 		public ServiceResult DeleteProduct(Guid Id)
 		{
@@ -144,6 +168,16 @@ namespace Falcon.BackEnd.Products.Service.Products
             var retVal = new ObjectResult<Product>(ServiceResultCode.Ok)
             {
                 Obj = _dbContext.Products.Include(x => x.ProductVariants).Where(x => x.Id == id).FirstOrDefault()
+            };
+
+            return retVal;
+        }
+        
+        public ObjectResult<ProductVariant> GetProductVariant(Guid id)
+        {
+            var retVal = new ObjectResult<ProductVariant>(ServiceResultCode.Ok)
+            {
+                Obj = _dbContext.ProductVariants.Where(x => x.Id == id).FirstOrDefault()
             };
 
             return retVal;

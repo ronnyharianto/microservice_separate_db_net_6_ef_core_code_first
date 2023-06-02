@@ -9,6 +9,7 @@ namespace Falcon.BackEnd.Showcases.Configuration
         public AutoMapperConfigurations()
         {
             CreateMap<ProductResponse, ProductViewModel>();
+            CreateMap<ProductVariantResponse, ProductVariantViewModel>();
         }
     }
 }
