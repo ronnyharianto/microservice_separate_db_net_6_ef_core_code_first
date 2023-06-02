@@ -17,13 +17,13 @@ namespace Falcon.BackEnd.Products.Handlers
         public string? Remark { get; set; }
 	}
 
-    public class ProductUpdatedHandler : ISubsriberHandler<JsonElement>
+    public class ProductUpdatedResultHandler : ISubsriberHandler<JsonElement>
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly HttpClientHelper _httpClient;
 
-        public ProductUpdatedHandler(ApplicationDbContext dbContext, IMapper mapper, HttpClientHelper httpClient)
+        public ProductUpdatedResultHandler(ApplicationDbContext dbContext, IMapper mapper, HttpClientHelper httpClient)
         {
             _dbContext = dbContext;
             _mapper = mapper;
