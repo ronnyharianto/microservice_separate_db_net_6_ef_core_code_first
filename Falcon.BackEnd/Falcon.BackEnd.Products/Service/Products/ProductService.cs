@@ -8,7 +8,6 @@ using Falcon.Libraries.Common.Enums;
 using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Common.Object;
 using Falcon.Libraries.Microservice.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Falcon.BackEnd.Products.Service.Products

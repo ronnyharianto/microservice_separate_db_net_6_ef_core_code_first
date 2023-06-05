@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using DotNetCore.CAP;
-using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Showcase.Domain;
-using Falcon.BackEnd.Showcases.Domain.Models.ViewModels;
 using Falcon.Libraries.Common.Constants;
 using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Microservice.Subscriber;
@@ -13,9 +11,6 @@ namespace Falcon.BackEnd.Showcases.Handlers
     public class ProductDeletedResponse
     {
         public Guid Id { get; set; }
-        //public string Code { get; set; } = string.Empty;
-        //public string Name { get; set; } = string.Empty;
-        //public string? Remark { get; set; }
     }
 
     public class ProductDeletedHandler : ISubsriberHandler<ProductDeleted>
@@ -39,12 +34,12 @@ namespace Falcon.BackEnd.Showcases.Handlers
 
             if (responseData != null && responseData.Id != Guid.Empty)
             {
-				var searchDataProduct = _dbContext.ProductViewModels.FirstOrDefault(x => x.Id == message.ProductId);
+                var searchDataProduct = _dbContext.ProductViewModels.FirstOrDefault(x => x.Id == message.ProductId);
 
-				if (searchDataProduct != null)
-				{
+                if (searchDataProduct != null)
+                {
                     searchDataProduct.RowStatus = 1;
-				}
+                }
 
                 return new { ProductId = responseData.Id, IsSuccess = true };
             }

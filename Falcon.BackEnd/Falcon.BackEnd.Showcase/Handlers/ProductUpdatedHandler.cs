@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using DotNetCore.CAP;
-using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Showcase.Domain;
-using Falcon.BackEnd.Showcases.Domain.Models.ViewModels;
 using Falcon.Libraries.Common.Constants;
 using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Microservice.Subscriber;
@@ -39,13 +37,13 @@ namespace Falcon.BackEnd.Showcases.Handlers
 
             if (responseData != null && responseData.Obj != null && responseData.Id != Guid.Empty)
             {
-				var searchDataProduct = _dbContext.ProductViewModels.FirstOrDefault(x => x.Id == message.ProductId);
+                var searchDataProduct = _dbContext.ProductViewModels.FirstOrDefault(x => x.Id == message.ProductId);
 
-				if (searchDataProduct != null)
-				{
+                if (searchDataProduct != null)
+                {
                     searchDataProduct.Name = responseData.Obj.Name;
                     searchDataProduct.Remark = responseData.Obj.Remark;
-				}
+                }
 
                 return new { ProductId = responseData.Id, IsSuccess = true };
             }

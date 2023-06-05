@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DotNetCore.CAP;
 using Falcon.BackEnd.Products.Domain;
-using Falcon.Libraries.Common.Constants;
 using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Microservice.Subscriber;
 using Falcon.Models.Topics;
@@ -12,9 +11,6 @@ namespace Falcon.BackEnd.Products.Handlers
     public class ProductDeletedResponse
     {
         public Guid Id { get; set; }
-        //public string Code { get; set; } = string.Empty;
-        //public string Name { get; set; } = string.Empty;
-        //public string? Remark { get; set; }
     }
 
     public class ProductDeletedResultHandler : ISubsriberHandler<JsonElement>

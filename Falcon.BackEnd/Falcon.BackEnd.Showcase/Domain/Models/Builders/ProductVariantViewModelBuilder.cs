@@ -1,8 +1,6 @@
-﻿using Falcon.BackEnd.Products.Domain.Models.Entities;
-using Falcon.BackEnd.Showcases.Domain.Models.ViewModels;
+﻿using Falcon.BackEnd.Showcases.Domain.Models.ViewModels;
 using Falcon.Libraries.DataAccess.Domain;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore;
 
 namespace Falcon.BackEnd.Showcases.Domain.Models.Builders
 {

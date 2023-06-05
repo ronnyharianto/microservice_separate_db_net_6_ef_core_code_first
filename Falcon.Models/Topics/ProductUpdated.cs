@@ -2,6 +2,6 @@
 {
     public class ProductUpdated
     {
-		public Guid ProductId { get; set; }
-	}
+        public Guid ProductId { get; set; }
+    }
 }

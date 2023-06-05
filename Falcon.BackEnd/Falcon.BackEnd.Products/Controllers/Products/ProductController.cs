@@ -68,59 +68,59 @@ namespace Falcon.BackEnd.Products.Controllers.Products
 
         }
 
-		[HttpPost("deleteproduct")]
-		public ServiceResult DeleteProduct(Guid Id)
-		{
-			var retVal = _productService.DeleteProduct(Id);
+        [HttpPost("deleteproduct")]
+        public ServiceResult DeleteProduct(Guid Id)
+        {
+            var retVal = _productService.DeleteProduct(Id);
 
             ProductDeleted productDeleted = new ProductDeleted
             {
                 ProductId = Id
-			};
+            };
 
-			if (retVal.Succeeded)
-			{
-				_publisher.Publish(nameof(ProductDeleted), productDeleted, nameof(ProductDeleted) + "Result");
-			}
+            if (retVal.Succeeded)
+            {
+                _publisher.Publish(nameof(ProductDeleted), productDeleted, nameof(ProductDeleted) + "Result");
+            }
 
-			return retVal;
-		}
+            return retVal;
+        }
 
-		[HttpPost("deleteproductvariant")]
-		public ServiceResult DeleteProductVariant(Guid Id)
-		{
-			var retVal = _productService.DeleteProductVariant(Id);
+        [HttpPost("deleteproductvariant")]
+        public ServiceResult DeleteProductVariant(Guid Id)
+        {
+            var retVal = _productService.DeleteProductVariant(Id);
 
-			return retVal;
-		}
+            return retVal;
+        }
 
-		[HttpPost("updateproduct")]
-		public ServiceResult UpdateProduct(ProductUpdate productUpdate)
-		{
-			var retVal = _productService.UpdateProduct(productUpdate);
+        [HttpPost("updateproduct")]
+        public ServiceResult UpdateProduct(ProductUpdate productUpdate)
+        {
+            var retVal = _productService.UpdateProduct(productUpdate);
 
-			ProductUpdated productUpdated = new ProductUpdated
-			{
+            ProductUpdated productUpdated = new ProductUpdated
+            {
                 ProductId = productUpdate.Id
-			};
+            };
 
-			if (retVal.Succeeded)
-			{
-				_publisher.Publish(nameof(ProductUpdated), productUpdated, nameof(ProductUpdated) + "Result");
-			}
+            if (retVal.Succeeded)
+            {
+                _publisher.Publish(nameof(ProductUpdated), productUpdated, nameof(ProductUpdated) + "Result");
+            }
 
-			return retVal;
-		}
+            return retVal;
+        }
 
-		[HttpPost("updateproductvariant")]
-		public ServiceResult UpdateProductVariant(Guid Id, ProductVariantUpdate productVariantUpdate)
-		{
-			var retVal = _productService.UpdateProductVariant(Id, productVariantUpdate);
+        [HttpPost("updateproductvariant")]
+        public ServiceResult UpdateProductVariant(Guid Id, ProductVariantUpdate productVariantUpdate)
+        {
+            var retVal = _productService.UpdateProductVariant(Id, productVariantUpdate);
 
-			return retVal;
-		}
+            return retVal;
+        }
 
-		[HttpGet("viewlist")]
+        [HttpGet("viewlist")]
         public ObjectResult<IQueryable<Product>> LoadProductLists()
         {
             return _productService.GetListProducts();
@@ -137,7 +137,7 @@ namespace Falcon.BackEnd.Products.Controllers.Products
         {
             return _productService.GetDetailProduct(id);
         }
-        
+
         [HttpGet("viewvariant/{id}")]
         public ObjectResult<ProductVariant> LoadProductVariant(Guid id)
         {

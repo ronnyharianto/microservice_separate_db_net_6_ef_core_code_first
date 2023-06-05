@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using DotNetCore.CAP;
 using Falcon.BackEnd.Products.Domain;
-using Falcon.Libraries.Common.Constants;
 using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Microservice.Subscriber;
 using Falcon.Models.Topics;
