@@ -51,6 +51,23 @@ namespace Falcon.BackEnd.Products.Controllers.Products
             return retVal;
         }
 
+        [HttpPost("creatlistvariant")]
+        public ObjectResult<List<VariantProductDto>> CreateListVariant(VariantProductInput data)
+        {
+            var retVal = _productService.CreateListVariant(data);
+
+            if (retVal.Succeeded && retVal.Obj != null)
+            {
+                foreach (var item in retVal.Obj)
+                {
+                    _publisher.Publish(nameof(ProductVariantCreated), _mapper.Map<ProductVariantCreated>(item), nameof(ProductVariantCreated) + "Result");
+                }
+            }
+
+            return retVal;
+
+        }
+
 		[HttpPost("deleteproduct")]
 		public ServiceResult DeleteProduct(Guid Id)
 		{
@@ -119,6 +136,12 @@ namespace Falcon.BackEnd.Products.Controllers.Products
         public ObjectResult<Product> LoadProductDetail(Guid id)
         {
             return _productService.GetDetailProduct(id);
+        }
+        
+        [HttpGet("viewvariant/{id}")]
+        public ObjectResult<ProductVariant> LoadProductVariant(Guid id)
+        {
+            return _productService.GetProductVariant(id);
         }
     }
 }

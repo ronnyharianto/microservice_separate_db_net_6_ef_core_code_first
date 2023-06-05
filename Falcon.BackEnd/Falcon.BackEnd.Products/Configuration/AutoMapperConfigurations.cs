@@ -20,6 +20,11 @@ namespace Falcon.BackEnd.Products.Configuration
 			CreateMap<ProductUpdate, Product>()
 				.ForMember(x => x.Code, opt => opt.Ignore());
 
+            CreateMap<VariantProductInput, ProductVariant>();
+            CreateMap<ProductVariant, VariantProductDto>();
+            CreateMap<VariantProductDto, ProductVariantCreated>()
+                .ForMember(d => d.ProductVariantId, o => o.MapFrom(s => s.Id));
+
             //CreateMap<Guid, ProductDeleted>();
 		}
     }
