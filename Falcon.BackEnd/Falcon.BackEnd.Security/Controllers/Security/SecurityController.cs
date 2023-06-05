@@ -14,9 +14,18 @@ namespace Falcon.BackEnd.Security.Controllers.Security
     [Route("api/v1/[controller]")]
     public class SecurityController : Controller
     {
+        private ILogger _logger;
+
+        public SecurityController(ILogger<SecurityController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpPost("login")]
         public ObjectResult<string> Login(LoginInput input)
         {
+            _logger.LogInformation("Start Login Process");
+
             var retVal = new ObjectResult<string>(ServiceResultCode.BadRequest);
 
             if (input.UserName == "username" && input.Password == "password")
@@ -43,10 +52,14 @@ namespace Falcon.BackEnd.Security.Controllers.Security
 
                 retVal.Obj = tokenHandler.WriteToken(token);
                 retVal.OK(null);
+
+                _logger.LogInformation("End Login Process - Success");
                 return retVal;
             }
 
             retVal.UnAuthorized("Please check username / password");
+
+            _logger.LogInformation("End Login Process - UnAuthorized");
             return retVal;
         }
     }

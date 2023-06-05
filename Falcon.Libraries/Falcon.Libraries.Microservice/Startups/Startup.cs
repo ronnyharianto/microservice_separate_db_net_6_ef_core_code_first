@@ -4,21 +4,20 @@ using Falcon.Libraries.Microservice.Subscriber;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
+using Serilog;
+using Serilog.Exceptions;
+using Serilog.Sinks.Elasticsearch;
 using System.Reflection;
 
 namespace Falcon.Libraries.Microservice.Startups
 {
-    //public class ParamInput
-    //{
-    //    public string EntityName { get; set; } = string.Empty;
-    //    public Guid Key { get; set; }
-    //    public List<string[]> Relations { get; set; } = new();
-    //}
-
     public class Startup<TApplicationDbContext> where TApplicationDbContext : DbContext
     {
         public Startup(string[] args)
@@ -34,8 +33,7 @@ namespace Falcon.Libraries.Microservice.Startups
             ConfigureAutoMapper(callingAssembly);
             ConfigureHttpClient();
             ConfigureRedis();
-
-            //Builder.Services.AddSwaggerGen();
+            ConfigureLogging(callingAssembly);
         }
         public WebApplicationBuilder Builder { get; set; }
 
@@ -57,38 +55,9 @@ namespace Falcon.Libraries.Microservice.Startups
                 }
             }
 
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
+            app.UseHttpLogging().UseSerilogRequestLogging();
 
             app.MapControllers();
-
-            //app.MapPost("/internal/loaddata", (ParamInput input) =>
-            //{
-            //    var entities = assembly
-            //                        .GetTypes()
-            //                        .Where(x => !x.IsAbstract && !x.IsInterface && typeof(EntityBase).IsAssignableFrom(x))
-            //                        .ToList();
-
-            //    foreach (var entity in entities)
-            //    {
-            //        if (entity.Name.ToLower() == input.EntityName.ToLower())
-            //        {
-            //            using var scope = app.Services.CreateScope();
-
-            //            var dbContext = scope.ServiceProvider.GetRequiredService<TApplicationDbContext>();
-
-            //            var data = dbContext.Find(entity, input.Key);
-
-            //            return data;
-            //        }
-            //    }
-
-            //    return default;
-            //});
-
-            //app.UseSwagger();
-            //app.UseSwaggerUI();
 
             app.Run();
         }
@@ -98,6 +67,7 @@ namespace Falcon.Libraries.Microservice.Startups
         {
             Builder.Services.AddScoped<JsonHelper>();
         }
+
         private void ConfigureController()
         {
             // Add services to the container.
@@ -199,6 +169,43 @@ namespace Falcon.Libraries.Microservice.Startups
             });
 
             Builder.Services.AddScoped<CacheHelper>();
+        }
+
+        private void ConfigureLogging(Assembly callingAssembly)
+        {
+            var elasticUri = Builder.Configuration.GetConnectionString("elasticsearch");
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var loggerConfig = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.WithExceptionDetails()
+                .ReadFrom.Configuration(configuration)
+                .WriteTo.Console();
+
+            if (elasticUri != null)
+            {
+                var callingAssemblyName = callingAssembly.GetName().Name ?? "Unknown";
+
+                loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+                {
+                    AutoRegisterTemplate = true,
+                    IndexFormat = $"{callingAssemblyName.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
+                });
+            }
+
+            Log.Logger = loggerConfig.CreateLogger();
+
+            Builder.Services.AddHttpLogging(logging =>
+            {
+                logging.LoggingFields = HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseBody;
+
+                logging.RequestBodyLogLimit = 4096;
+                logging.ResponseBodyLogLimit = 4096;
+            });
+
+            Builder.Host.UseSerilog();
         }
         #endregion
     }

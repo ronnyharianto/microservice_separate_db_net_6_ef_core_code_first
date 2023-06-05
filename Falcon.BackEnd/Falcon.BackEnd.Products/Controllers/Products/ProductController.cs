@@ -4,6 +4,7 @@ using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
 using Falcon.BackEnd.Products.Controllers.Products.Inputs;
 using Falcon.BackEnd.Products.Domain.Models.Entities;
 using Falcon.BackEnd.Products.Service.Products;
+using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Common.Object;
 using Falcon.Models.Topics;
 using Microsoft.AspNetCore.Mvc;
@@ -15,25 +16,37 @@ namespace Falcon.BackEnd.Products.Controllers.Products
     public class ProductController : Controller
     {
         private readonly ProductService _productService;
+        private readonly JsonHelper _jsonHelper;
         private readonly ICapPublisher _publisher;
         private readonly IMapper _mapper;
+        private readonly ILogger _logger;
 
-        public ProductController(ProductService productService, ICapPublisher publisher, IMapper mapper)
+        public ProductController(ProductService productService, JsonHelper jsonHelper, ICapPublisher publisher, IMapper mapper, ILogger<ProductController> logger)
         {
             _productService = productService;
+            _jsonHelper = jsonHelper;
             _publisher = publisher;
             _mapper = mapper;
+            _logger = logger;
         }
 
         [HttpPost("create")]
         public ObjectResult<ProductDto> CreateProduct(ProductInput data)
         {
+            _logger.LogInformation("ProductController - CreateProduct - Started");
+
             var retVal = _productService.Create(data);
 
             if (retVal.Succeeded && retVal.Obj != null)
             {
-                _publisher.Publish(nameof(ProductCreated), _mapper.Map<ProductCreated>(retVal.Obj), nameof(ProductCreated) + "Result");
+                var productCreated = _mapper.Map<ProductCreated>(retVal.Obj);
+
+                _logger
+                    .LogInformation("ProductController - CreateProduct - Publish Topic ProductCreated ({productCreated})", _jsonHelper.SerializeObject(productCreated));
+                _publisher.Publish(nameof(ProductCreated), productCreated, nameof(ProductCreated) + "Result");
             }
+
+            _logger.LogInformation("ProductController - CreateProduct - End");
 
             return retVal;
         }
