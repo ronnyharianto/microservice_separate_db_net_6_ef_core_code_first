@@ -1,0 +1,58 @@
+﻿<script type="text/javascript">
+	let tblProductList;
+
+	let Product = (function () {
+		return {
+			InitManagement: function () {
+				this.InitControls();
+				this.InitValidations();
+				this.InitHandlers();
+			},
+			InitControls: function () {
+				tblProductList = $("#tblProductList").DataTable({
+					ajax: {
+						url: glbFalconUrl + "product/viewlist",
+						dataSrc: "obj"
+					},
+					columns: [
+						{ data: "code", title: "Kode" },
+						{ data: "name", title: "Nama" },
+						{
+							data: "price",
+							title: "Harga",
+							render: function (val) {
+								var formattedPrice = new Intl.NumberFormat("id-ID", {
+									style: "currency",
+									currency: "IDR",
+								}).format(val);
+
+								return formattedPrice;
+							}
+						}
+					]
+				});
+			},
+			InitValidations: function () {
+
+			},
+			InitHandlers: function () {
+				
+			}
+		};
+	})();
+
+	let ProductUtils = (function () {
+		function SomeOtherMethod() {
+
+		}
+
+		return {
+			SomeOtherMethod: SomeOtherMethod
+		};
+	})();
+
+	$(document).ready(function () {
+		Product.InitManagement();
+		ProductUtils.SomeOtherMethod();
+	});
+</script>
