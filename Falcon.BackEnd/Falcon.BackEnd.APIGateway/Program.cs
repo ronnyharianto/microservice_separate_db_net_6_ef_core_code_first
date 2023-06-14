@@ -16,9 +16,22 @@ namespace Falcon.BackEnd.APIGateway
             builder.Services.AddAuthentication()
                 .AddJwtBearer("jwt-schema", JwtTokenOption.OptionValidation);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://localhost:7000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
             var app = builder.Build();
 
             app.UseAuthentication();
+
+            app.UseCors();
+
             app.UseOcelot().Wait();
 
             app.Run();

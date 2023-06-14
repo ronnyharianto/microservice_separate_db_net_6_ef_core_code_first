@@ -1,0 +1,11 @@
+﻿@section scripts {
+    @await Html.PartialAsync("~/Areas/Core/Views/Product/Scripts/_ProductScript.cshtml")
+}
+
+@{
+    ViewData["Title"] = "Product";
+}
+
+<div class="row">
+    <table id="tblProductList" class="table table-striped" style="width:100%"></table>
+</div>

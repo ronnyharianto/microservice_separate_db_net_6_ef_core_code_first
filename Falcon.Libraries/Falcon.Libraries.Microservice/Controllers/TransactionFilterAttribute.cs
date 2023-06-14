@@ -1,24 +1,18 @@
 ﻿using Falcon.Libraries.Common.Enums;
-using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Common.Object;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Falcon.Libraries.Microservice.Controllers
 {
     public class TransactionFilterAttribute<TApplicationDbContext> : IAsyncActionFilter where TApplicationDbContext : DbContext
     {
         private readonly TApplicationDbContext _dbContext;
-        private readonly ILogger _logger;
-        private readonly JsonHelper _jsonHelper;
 
-        public TransactionFilterAttribute(TApplicationDbContext dbContext, ILogger<TransactionFilterAttribute<TApplicationDbContext>> logger, JsonHelper jsonHelper)
+        public TransactionFilterAttribute(TApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            _logger = logger;
-            _jsonHelper = jsonHelper;
         }
 
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
