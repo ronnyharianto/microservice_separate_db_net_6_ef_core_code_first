@@ -143,5 +143,13 @@ namespace Falcon.BackEnd.Products.Controllers.Products
         {
             return _productService.GetProductVariant(id);
         }
+
+        [HttpPost("creatnotif")]
+        public ObjectResult<NotifDto> CreateNotif(NotifInput data)
+        {
+            var retVal = _productService.CreateNotif(data);
+
+            return retVal;
+        }
     }
 }

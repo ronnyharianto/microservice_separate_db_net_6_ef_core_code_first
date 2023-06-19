@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CorePush.Google;
 using Falcon.BackEnd.Products.Common;
 using Falcon.BackEnd.Products.Controllers.Products.CustomModels;
 using Falcon.BackEnd.Products.Controllers.Products.Inputs;
@@ -9,15 +10,22 @@ using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Common.Object;
 using Falcon.Libraries.Microservice.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Nancy.Json;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace Falcon.BackEnd.Products.Service.Products
 {
     public class ProductService : BaseService<ApplicationDbContext>
     {
         private readonly CacheHelper _cacheHelper;
-        public ProductService(ApplicationDbContext dbContext, IMapper mapper, CacheHelper cacheHelper) : base(dbContext, mapper)
+        private readonly FcmNotificationSetting _fcmNotificationSetting;
+        public ProductService(ApplicationDbContext dbContext, IMapper mapper, CacheHelper cacheHelper, IOptions<FcmNotificationSetting> settings) : base(dbContext, mapper)
         {
             _cacheHelper = cacheHelper;
+            _fcmNotificationSetting = settings.Value;
         }
 
         public ObjectResult<ProductDto> Create(ProductInput data)
@@ -178,6 +186,107 @@ namespace Falcon.BackEnd.Products.Service.Products
             {
                 Obj = _dbContext.ProductVariants.Where(x => x.Id == id).FirstOrDefault()
             };
+
+            return retVal;
+        }
+
+        public ObjectResult<NotifDto> CreateNotif(NotifInput input)
+        {
+            var retVal = new ObjectResult<NotifDto>(ServiceResultCode.BadRequest);
+
+            /* FCM Sender (Android Device) */
+            //FcmSettings settings = new FcmSettings()
+            //{
+            //    ServerKey = _fcmNotificationSetting.ServerKey
+            //};
+
+            //HttpClient httpClient = new HttpClient();
+
+            //string authorizationKey = string.Format("keyy={0}", settings.ServerKey);
+            //string deviceToken = input.Topic;
+
+            //httpClient.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", authorizationKey);
+            //httpClient.DefaultRequestHeaders.Accept
+            //        .Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
+            //var pushMessage = new FcmConfig() 
+            //{
+            //    Topic = input.Topic,
+            //    Notification = new NotifDto() 
+            //    {
+            //        Title = input.Title,
+            //        Body = input.Body
+            //    }
+            //};          
+
+            //var fcm = new FcmSender(settings, httpClient);
+            //var fcmSendResponse = fcm.SendAsync(dat);
+
+            //if (fcmSendResponse.IsCompletedSuccessfully)
+            //{
+            //    retVal.OK(null);
+            //}
+
+            var serverKey = _fcmNotificationSetting.ServerKey;
+
+            var result = "1";
+
+            WebRequest tRequest = WebRequest.Create("https://fcm.googleapis.com/fcm/send");
+
+            tRequest.Method = "post";
+
+            tRequest.ContentType = "application/json";
+
+            var data = new
+            {
+                to = input.Topic,
+                notification = new
+                {
+                    body = input.Body,
+                    title = input.Title
+                }
+            };
+
+            var serializer = new JavaScriptSerializer();
+
+            var json = serializer.Serialize(data);
+
+            Byte[] byteArray = Encoding.UTF8.GetBytes(json);
+
+            tRequest.Headers.Add(string.Format("Authorization: key={0}", serverKey));
+
+            //tRequest.Headers.Add(string.Format("Sender: id={0}", senderId));
+
+            tRequest.ContentLength = byteArray.Length;
+
+            using (Stream dataStream = tRequest.GetRequestStream())
+            {
+
+                dataStream.Write(byteArray, 0, byteArray.Length);
+
+
+                using (WebResponse tResponse = tRequest.GetResponse())
+                {
+
+                    using (Stream dataStreamResponse = tResponse.GetResponseStream())
+                    {
+
+                        using (StreamReader tReader = new StreamReader(dataStreamResponse))
+                        {
+
+                            String sResponseFromServer = tReader.ReadToEnd();
+
+                            result = sResponseFromServer;
+
+                        }
+                    }
+                }
+            }
+
+            if(result != "1")
+            {
+                retVal.OK(null);
+            }
 
             return retVal;
         }
