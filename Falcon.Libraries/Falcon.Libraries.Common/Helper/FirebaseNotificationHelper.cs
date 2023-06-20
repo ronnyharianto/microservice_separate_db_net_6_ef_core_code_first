@@ -9,11 +9,9 @@ namespace Falcon.Libraries.Common.Helper
 {
     public class FirebaseNotificationHelper
     {
-        private readonly HttpClient _client;
         private readonly JsonHelper _jsonHelper;
-        public FirebaseNotificationHelper(HttpClient client, JsonHelper jsonHelper)
+        public FirebaseNotificationHelper(JsonHelper jsonHelper)
         {
-            _client = client;
             _jsonHelper = jsonHelper;
         }
 
@@ -21,8 +19,10 @@ namespace Falcon.Libraries.Common.Helper
         {
             var retval = new ServiceResult(ServiceResultCode.BadRequest);
 
-            _client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            _client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={serverKey}");
+            HttpClient client = new HttpClient();
+
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={serverKey}");
 
             var data = new
             {
@@ -37,7 +37,7 @@ namespace Falcon.Libraries.Common.Helper
             var json = _jsonHelper.SerializeObject(data);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var results = await _client.PostAsync(ServiceConstants.FirebaseCloudMessagingService, httpContent);
+            var results = await client.PostAsync(ServiceConstants.FirebaseCloudMessagingService, httpContent);
 
             if (results.IsSuccessStatusCode)
             {

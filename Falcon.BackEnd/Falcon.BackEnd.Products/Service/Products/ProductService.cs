@@ -192,7 +192,7 @@ namespace Falcon.BackEnd.Products.Service.Products
             int result = 0;
             var retVal = new ObjectResult<NotifDto>(ServiceResultCode.BadRequest);
 
-            foreach(var target in input.Topic)
+            foreach(string target in input.Target)
             {
                 var sendNotif = await _firebaseNotificationHelper.SendNotif(_fcmNotificationSetting.ServerKey, target, input.Body, input.Title);
 
@@ -205,7 +205,7 @@ namespace Falcon.BackEnd.Products.Service.Products
             if(result > 0)
             {
                 retVal.Obj = _mapper.Map<NotifDto>(input);
-                retVal.OK("notif complete " + $"{result}" + "/" + $"{input.Topic.Count}");
+                retVal.OK("notif complete by Target(Topic or User) " + $"{result}" + "/" + $"{input.Target.Count}");
             }
 
             return retVal;
