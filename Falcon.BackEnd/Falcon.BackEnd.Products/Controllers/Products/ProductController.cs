@@ -145,9 +145,9 @@ namespace Falcon.BackEnd.Products.Controllers.Products
         }
 
         [HttpPost("creatnotif")]
-        public ObjectResult<NotifDto> CreateNotif(NotifInput data)
+        public async Task<ObjectResult<NotifDto>> CreateNotif(NotifInput data)
         {
-            var retVal = _productService.CreateNotif(data);
+            var retVal = await _productService.CreateNotif(data);
 
             return retVal;
         }
