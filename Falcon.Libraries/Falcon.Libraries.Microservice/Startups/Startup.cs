@@ -64,6 +64,7 @@ namespace Falcon.Libraries.Microservice.Startups
         private void ConfigureGeneral()
         {
             Builder.Services.AddScoped<JsonHelper>();
+            Builder.Services.AddScoped<FirebaseNotificationHelper>();
         }
 
         private void ConfigureController()
