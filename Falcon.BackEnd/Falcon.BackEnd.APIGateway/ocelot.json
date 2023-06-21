@@ -62,6 +62,22 @@
                 "AuthenticationProviderKey": "jwt-schema",
                 "AllowedScopes": []
             }
+        },
+        {
+            "UpstreamPathTemplate": "/notification/{catchAll}",
+            "UpstreamHttpMethod": [ "Get", "Post" ],
+            "DownstreamPathTemplate": "/api/v1/notification/{catchAll}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5060
+                }
+            ],
+            "AuthenticationOptions": {
+                "AuthenticationProviderKey": "jwt-schema",
+                "AllowedScopes": []
+            }
         }
     ]
 }

@@ -24,8 +24,6 @@ namespace Falcon.BackEnd.Products.Configuration
             CreateMap<ProductVariant, VariantProductDto>();
             CreateMap<VariantProductDto, ProductVariantCreated>()
                 .ForMember(d => d.ProductVariantId, o => o.MapFrom(s => s.Id));
-
-            CreateMap<NotifInput, NotifDto>();
         }
     }
 }

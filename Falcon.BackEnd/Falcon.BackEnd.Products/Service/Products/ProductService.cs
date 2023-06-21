@@ -16,13 +16,9 @@ namespace Falcon.BackEnd.Products.Service.Products
     public class ProductService : BaseService<ApplicationDbContext>
     {
         private readonly CacheHelper _cacheHelper;
-        private readonly FcmNotificationSetting _fcmNotificationSetting;
-        private readonly FirebaseNotificationHelper _firebaseNotificationHelper;
-        public ProductService(ApplicationDbContext dbContext, IMapper mapper, CacheHelper cacheHelper, IOptions<FcmNotificationSetting> settings, FirebaseNotificationHelper firebaseNotificationHelper) : base(dbContext, mapper)
+        public ProductService(ApplicationDbContext dbContext, IMapper mapper, CacheHelper cacheHelper, FirebaseNotificationHelper firebaseNotificationHelper) : base(dbContext, mapper)
         {
             _cacheHelper = cacheHelper;
-            _fcmNotificationSetting = settings.Value;
-            _firebaseNotificationHelper = firebaseNotificationHelper;
         }
 
         public ObjectResult<ProductDto> Create(ProductInput data)
@@ -183,30 +179,6 @@ namespace Falcon.BackEnd.Products.Service.Products
             {
                 Obj = _dbContext.ProductVariants.Where(x => x.Id == id).FirstOrDefault()
             };
-
-            return retVal;
-        }
-
-        public async Task<ObjectResult<NotifDto>> CreateNotif(NotifInput input)
-        {
-            int result = 0;
-            var retVal = new ObjectResult<NotifDto>(ServiceResultCode.BadRequest);
-
-            foreach(string target in input.Target)
-            {
-                var sendNotif = await _firebaseNotificationHelper.SendNotif(_fcmNotificationSetting.ServerKey, target, input.Body, input.Title);
-
-                if (sendNotif.Succeeded == true)
-                {
-                    result += 1;
-                }
-            }
-
-            if(result > 0)
-            {
-                retVal.Obj = _mapper.Map<NotifDto>(input);
-                retVal.OK("notif complete by Target(Topic or User) " + $"{result}" + "/" + $"{input.Target.Count}");
-            }
 
             return retVal;
         }
