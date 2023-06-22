@@ -1,6 +1,10 @@
 using Falcon.BackEnd.Showcase.Domain;
 using Falcon.Libraries.Microservice.Startups;
 
-var app = new Startup<ApplicationDbContext>(args);
+var builder = WebApplication.CreateBuilder();
 
-app.Run();
+builder.UseMicroservice<ApplicationDbContext>();
+
+var app = builder.Build();
+
+app.RunMicroservice<ApplicationDbContext>();
