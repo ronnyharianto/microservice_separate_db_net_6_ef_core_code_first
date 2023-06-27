@@ -2,6 +2,7 @@
 using Falcon.BackEnd.Notifications.Controllers.Notifications.CustomModels;
 using Falcon.BackEnd.Notifications.Controllers.Notifications.Inputs;
 using Falcon.BackEnd.Notifications.Domain;
+using Falcon.BackEnd.Notifications.Domain.Models.Entities;
 using Falcon.Libraries.Common.Enums;
 using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Common.Object;
@@ -21,6 +22,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
             _firebaseNotificationHelper = firebaseNotificationHelper;
         }
 
+        #region Mutation
         public async Task<ObjectResult<NotifDto>> CreateNotif(NotifInput input)
         {
             int result = 0;
@@ -45,5 +47,70 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
             return retVal;
         }
 
+        public ObjectResult<UserNotifDto> CreateUserNotif(UserNotifInput input)
+        {
+            var retVal = new ObjectResult<UserNotifDto>(ServiceResultCode.BadRequest);
+
+            var newData = _mapper.Map<UserNotifInput, UserNotif>(input);
+
+            if (newData != null)
+            {
+                _dbContext.UserNotif.Add(newData);
+
+                retVal.Obj = _mapper.Map<UserNotif, UserNotifDto>(newData);
+                retVal.OK(null);
+            }
+
+            return retVal;
+        }
+        
+        public ObjectResult<NotifTemplateDto> CreateNotifTemplate(NotifTemplateInput input)
+        {
+            var retVal = new ObjectResult<NotifTemplateDto>(ServiceResultCode.BadRequest);
+
+            var newData = _mapper.Map<NotifTemplateInput, NotificationTemplate>(input);
+
+            if (newData != null)
+            {
+                _dbContext.NotificationTemplate.Add(newData);
+
+                retVal.Obj = _mapper.Map<NotificationTemplate, NotifTemplateDto>(newData);
+                retVal.OK(null);
+            }
+
+            return retVal;
+        }
+        
+        public ServiceResult UpdateNotifTemplate(NotifTemplateUpdate input)
+        {
+            var retVal = new ServiceResult(ServiceResultCode.NotFound);
+
+            var searchDataNotifTemplate = _dbContext.NotificationTemplate.Where(e => e.Id == input.Id).FirstOrDefault();
+
+            if (searchDataNotifTemplate != null)
+            {
+                _mapper.Map(input, searchDataNotifTemplate);
+
+                _dbContext.NotificationTemplate.Update(searchDataNotifTemplate);
+
+                retVal.OK(null);
+            }
+
+            return retVal;
+        }
+        #endregion
+
+        #region Query
+        public ObjectResult<IQueryable<NotificationTemplate>> GetListAllNotifTemplate()
+        {
+            var retVal = new ObjectResult<IQueryable<NotificationTemplate>>(ServiceResultCode.BadRequest)
+            {
+                Obj = _dbContext.NotificationTemplate.AsQueryable()
+            };
+            retVal.OK(null);
+
+            return retVal;
+        }
+        #endregion
     }
 }
