@@ -12,7 +12,7 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
             base.Configure(builder);
 
             builder
-                .Property(e => e.IdNotif);
+                .Property(e => e.NotifId);
 
             builder
                 .Property(e => e.UserNotifId);
@@ -20,7 +20,7 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
             builder
                 .HasOne(e => e.Notification)
                 .WithMany(e => e.ReadNotif)
-                .HasForeignKey(e => e.IdNotif)
+                .HasForeignKey(e => e.NotifId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder
