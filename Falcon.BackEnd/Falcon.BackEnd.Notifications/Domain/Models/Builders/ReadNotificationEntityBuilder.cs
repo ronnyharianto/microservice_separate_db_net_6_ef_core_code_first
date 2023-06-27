@@ -5,28 +5,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
 {
-    public class ReadNotifEntityBuilder : EntityBaseBuilder<ReadNotif>
+    public class ReadNotificationEntityBuilder : EntityBaseBuilder<ReadNotification>
     {
-        public override void Configure(EntityTypeBuilder<ReadNotif> builder)
+        public override void Configure(EntityTypeBuilder<ReadNotification> builder)
         {
             base.Configure(builder);
 
             builder
-                .Property(e => e.NotifId);
+                .Property(e => e.NotificationId);
 
             builder
-                .Property(e => e.UserNotifId);
+                .Property(e => e.UserNotificationId);
 
             builder
                 .HasOne(e => e.Notification)
-                .WithMany(e => e.ReadNotif)
-                .HasForeignKey(e => e.NotifId)
+                .WithMany(e => e.ReadNotification)
+                .HasForeignKey(e => e.NotificationId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder
-                .HasOne(e => e.UserNotif)
-                .WithMany(e => e.ReadNotif)
-                .HasForeignKey(e => e.UserNotifId)
+                .HasOne(e => e.UserNotification)
+                .WithMany(e => e.ReadNotification)
+                .HasForeignKey(e => e.UserNotificationId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

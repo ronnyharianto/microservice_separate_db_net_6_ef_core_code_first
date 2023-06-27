@@ -1,6 +1,6 @@
-﻿namespace Falcon.BackEnd.Notifications.Controllers.Notifications.CustomModels
+﻿namespace Falcon.BackEnd.Notifications.Controllers.Notifications.Inputs
 {
-    public class NotifTemplateDto
+    public class NotificationTemplateInput
     {
         public string Title { get; set; } = string.Empty;
         public string Body { get; set; } = string.Empty;

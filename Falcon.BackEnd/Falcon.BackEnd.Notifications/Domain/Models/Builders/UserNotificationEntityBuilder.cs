@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
 {
-    public class UserNotifEntityBuilder : EntityBaseBuilder<UserNotif>
+    public class UserNotificationEntityBuilder : EntityBaseBuilder<UserNotification>
     {
-        public override void Configure(EntityTypeBuilder<UserNotif> builder)
+        public override void Configure(EntityTypeBuilder<UserNotification> builder)
         {
             base.Configure(builder);
 
@@ -22,10 +22,10 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
             DataSeeding(builder);
         }
 
-        private static void DataSeeding(EntityTypeBuilder<UserNotif> builder)
+        private static void DataSeeding(EntityTypeBuilder<UserNotification> builder)
         {
             builder
-                .HasData(new UserNotif()
+                .HasData(new UserNotification()
                 {
                     Id = new Guid("420b5665-c03e-41e1-b591-c30620ac7b94"),
                     UserId = 110,
@@ -35,7 +35,7 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 });
 
             builder
-                .HasData(new UserNotif()
+                .HasData(new UserNotification()
                 {
                     Id = new Guid("05ed93bf-c16c-4572-980d-8eb86338560f"),
                     UserId = 111,

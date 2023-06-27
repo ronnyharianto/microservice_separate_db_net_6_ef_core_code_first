@@ -1,6 +1,6 @@
 ﻿namespace Falcon.BackEnd.Notifications.Controllers.Notifications.Inputs
 {
-    public class NotifTemplateUpdate
+    public class NotificationTemplateUpdate
     {
         public Guid Id { get; set; }
         public string Title { get; set; } = string.Empty;

@@ -1,6 +1,6 @@
 ﻿namespace Falcon.BackEnd.Notifications.Controllers.Notifications.CustomModels
 {
-    public class UserNotifDto
+    public class UserNotificationDto
     {
         public int UserId { get; set; }
         public string FcmToken { get; set; } = string.Empty;

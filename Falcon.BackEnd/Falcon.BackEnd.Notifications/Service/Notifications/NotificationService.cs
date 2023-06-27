@@ -23,10 +23,10 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
         }
 
         #region Mutation
-        public async Task<ObjectResult<NotifDto>> CreateNotif(NotifInput input)
+        public async Task<ObjectResult<NotificationDto>> CreateNotif(NotificationInput input)
         {
             int result = 0;
-            var retVal = new ObjectResult<NotifDto>(ServiceResultCode.BadRequest);
+            var retVal = new ObjectResult<NotificationDto>(ServiceResultCode.BadRequest);
 
             foreach (string target in input.Target)
             {
@@ -40,48 +40,48 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
 
             if (result > 0)
             {
-                retVal.Obj = _mapper.Map<NotifDto>(input);
+                retVal.Obj = _mapper.Map<NotificationDto>(input);
                 retVal.OK("notif complete by Target(Topic or User) " + $"{result}" + "/" + $"{input.Target.Count}");
             }
 
             return retVal;
         }
 
-        public ObjectResult<UserNotifDto> CreateUserNotif(UserNotifInput input)
+        public ObjectResult<UserNotificationDto> CreateUserNotif(UserNotificationInput input)
         {
-            var retVal = new ObjectResult<UserNotifDto>(ServiceResultCode.BadRequest);
+            var retVal = new ObjectResult<UserNotificationDto>(ServiceResultCode.BadRequest);
 
-            var newData = _mapper.Map<UserNotifInput, UserNotif>(input);
+            var newData = _mapper.Map<UserNotificationInput, UserNotification>(input);
 
             if (newData != null)
             {
                 _dbContext.UserNotif.Add(newData);
 
-                retVal.Obj = _mapper.Map<UserNotif, UserNotifDto>(newData);
+                retVal.Obj = _mapper.Map<UserNotification, UserNotificationDto>(newData);
                 retVal.OK(null);
             }
 
             return retVal;
         }
         
-        public ObjectResult<NotifTemplateDto> CreateNotifTemplate(NotifTemplateInput input)
+        public ObjectResult<NotificationTemplateDto> CreateNotifTemplate(NotificationTemplateInput input)
         {
-            var retVal = new ObjectResult<NotifTemplateDto>(ServiceResultCode.BadRequest);
+            var retVal = new ObjectResult<NotificationTemplateDto>(ServiceResultCode.BadRequest);
 
-            var newData = _mapper.Map<NotifTemplateInput, NotificationTemplate>(input);
+            var newData = _mapper.Map<NotificationTemplateInput, NotificationTemplate>(input);
 
             if (newData != null)
             {
                 _dbContext.NotificationTemplate.Add(newData);
 
-                retVal.Obj = _mapper.Map<NotificationTemplate, NotifTemplateDto>(newData);
+                retVal.Obj = _mapper.Map<NotificationTemplate, NotificationTemplateDto>(newData);
                 retVal.OK(null);
             }
 
             return retVal;
         }
         
-        public ServiceResult UpdateNotifTemplate(NotifTemplateUpdate input)
+        public ServiceResult UpdateNotifTemplate(NotificationTemplateUpdate input)
         {
             var retVal = new ServiceResult(ServiceResultCode.NotFound);
 
@@ -98,6 +98,24 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
 
             return retVal;
         }
+
+        public ObjectResult<ReadNotificationDto> CreateReadNotif(ReadNotificationInput input)
+        {
+            var retVal = new ObjectResult<ReadNotificationDto>(ServiceResultCode.BadRequest);
+
+            var newData = _mapper.Map<ReadNotificationInput, ReadNotification>(input);
+
+            if (newData != null)
+            {
+                _dbContext.ReadNotif.Add(newData);
+
+                retVal.Obj = _mapper.Map<ReadNotification, ReadNotificationDto>(newData);
+                retVal.OK(null);
+            }
+
+            return retVal;
+        }
+
         #endregion
 
         #region Query

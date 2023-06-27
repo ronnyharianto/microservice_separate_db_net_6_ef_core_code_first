@@ -1,6 +1,6 @@
 ﻿namespace Falcon.BackEnd.Notifications.Controllers.Notifications.Inputs
 {
-    public class UserNotifInput
+    public class UserNotificationInput
     {
         public int UserId { get; set; } 
         public string FcmToken { get; set; } = string.Empty;

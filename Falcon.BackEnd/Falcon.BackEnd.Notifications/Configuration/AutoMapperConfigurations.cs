@@ -9,15 +9,18 @@ namespace Falcon.BackEnd.Notifications.Configuration
     {
         public AutoMapperConfigurations()
         {
-            CreateMap<NotifInput, NotifDto>();
-            CreateMap<UserNotifInput, UserNotif>();
-            CreateMap<UserNotif, UserNotifDto>();
-            CreateMap<NotifTemplateInput, NotifTemplateDto>();
-            CreateMap<NotifTemplateInput, NotificationTemplate>();
-            CreateMap<NotificationTemplate, NotifTemplateDto>();
+            CreateMap<NotificationInput, NotificationDto>();
+            CreateMap<UserNotificationInput, UserNotification>();
+            CreateMap<UserNotification, UserNotificationDto>();
+            CreateMap<NotificationTemplateInput, NotificationTemplateDto>();
+            CreateMap<NotificationTemplateInput, NotificationTemplate>();
+            CreateMap<NotificationTemplate, NotificationTemplateDto>();
 
-            CreateMap<NotifTemplateUpdate, NotificationTemplate>()
+            CreateMap<NotificationTemplateUpdate, NotificationTemplate>()
                 .ForMember(e => e.Code, opt => opt.Ignore());
+
+            CreateMap<ReadNotificationInput, ReadNotification>();
+            CreateMap<ReadNotification, ReadNotificationDto>();
         }
     }
 }

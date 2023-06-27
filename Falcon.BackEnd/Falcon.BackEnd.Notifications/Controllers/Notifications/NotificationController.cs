@@ -19,7 +19,7 @@ namespace Falcon.BackEnd.Notifications.Controllers.Notifications
         }
 
         [HttpPost("createnotif")]
-        public async Task<ObjectResult<NotifDto>> CreateNotif(NotifInput data)
+        public async Task<ObjectResult<NotificationDto>> CreateNotif(NotificationInput data)
         {
             var retVal = await _notificationService.CreateNotif(data);
 
@@ -27,7 +27,7 @@ namespace Falcon.BackEnd.Notifications.Controllers.Notifications
         }
         
         [HttpPost("createusernotif")]
-        public ObjectResult<UserNotifDto> CreateUserNotif(UserNotifInput data)
+        public ObjectResult<UserNotificationDto> CreateUserNotif(UserNotificationInput data)
         {
             var retVal = _notificationService.CreateUserNotif(data);
 
@@ -35,7 +35,7 @@ namespace Falcon.BackEnd.Notifications.Controllers.Notifications
         }
         
         [HttpPost("createnotiftemplate")]
-        public ObjectResult<NotifTemplateDto> CreateNotifTemplate(NotifTemplateInput data)
+        public ObjectResult<NotificationTemplateDto> CreateNotifTemplate(NotificationTemplateInput data)
         {
             var retVal = _notificationService.CreateNotifTemplate(data);
 
@@ -43,7 +43,7 @@ namespace Falcon.BackEnd.Notifications.Controllers.Notifications
         }
         
         [HttpPost("updatenotiftemplate")]
-        public ServiceResult UpdateNotifTemplate(NotifTemplateUpdate data)
+        public ServiceResult UpdateNotifTemplate(NotificationTemplateUpdate data)
         {
             var retVal = _notificationService.UpdateNotifTemplate(data);
 
@@ -54,6 +54,14 @@ namespace Falcon.BackEnd.Notifications.Controllers.Notifications
         public ObjectResult<IQueryable<NotificationTemplate>> GetListAllNotifTemplate()
         {
             return _notificationService.GetListAllNotifTemplate();
+        }
+
+        [HttpPost("createreadnotif")]
+        public ObjectResult<ReadNotificationDto> CreateReadNotif(ReadNotificationInput data)
+        {
+            var retVal = _notificationService.CreateReadNotif(data);
+
+            return retVal;
         }
     }
 }
