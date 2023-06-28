@@ -18,48 +18,48 @@ namespace Falcon.BackEnd.Notifications.Controllers.Notifications
             _notificationService = notificationService;
         }
 
-        [HttpPost("createnotif")]
-        public async Task<ObjectResult<NotificationDto>> CreateNotif(NotificationInput data)
+        [HttpPost("createnotification")]
+        public async Task<ObjectResult<NotificationDto>> CreateNotification(NotificationInput data)
         {
-            var retVal = await _notificationService.CreateNotif(data);
+            var retVal = await _notificationService.CreateNotification(data);
 
             return retVal;
         }
         
-        [HttpPost("createusernotif")]
-        public ObjectResult<UserNotificationDto> CreateUserNotif(UserNotificationInput data)
+        [HttpPost("createusernotification")]
+        public ObjectResult<UserNotificationDto> CreateUserNotification(UserNotificationInput data)
         {
-            var retVal = _notificationService.CreateUserNotif(data);
+            var retVal = _notificationService.CreateUserNotification(data);
 
             return retVal;
         }
         
-        [HttpPost("createnotiftemplate")]
-        public ObjectResult<NotificationTemplateDto> CreateNotifTemplate(NotificationTemplateInput data)
+        [HttpPost("createnotificationtemplate")]
+        public ObjectResult<NotificationTemplateDto> CreateNotificationTemplate(NotificationTemplateInput data)
         {
-            var retVal = _notificationService.CreateNotifTemplate(data);
+            var retVal = _notificationService.CreateNotificationTemplate(data);
 
             return retVal;
         }
         
-        [HttpPost("updatenotiftemplate")]
-        public ServiceResult UpdateNotifTemplate(NotificationTemplateUpdate data)
+        [HttpPost("updatenotificationtemplate")]
+        public ServiceResult UpdateNotificationTemplate(NotificationTemplateUpdate data)
         {
-            var retVal = _notificationService.UpdateNotifTemplate(data);
+            var retVal = _notificationService.UpdateNotificationTemplate(data);
 
             return retVal;
         }
 
-        [HttpGet("viewlistallnotiftemplate")]
-        public ObjectResult<IQueryable<NotificationTemplate>> GetListAllNotifTemplate()
+        [HttpGet("viewlistallnotificationtemplate")]
+        public ObjectResult<IQueryable<NotificationTemplate>> GetListAllNotificationTemplate()
         {
-            return _notificationService.GetListAllNotifTemplate();
+            return _notificationService.GetListAllNotificationTemplate();
         }
 
-        [HttpPost("createreadnotif")]
-        public ObjectResult<ReadNotificationDto> CreateReadNotif(ReadNotificationInput data)
+        [HttpPost("createreadnotification")]
+        public ObjectResult<ReadNotificationDto> CreateReadNotification(ReadNotificationInput data)
         {
-            var retVal = _notificationService.CreateReadNotif(data);
+            var retVal = _notificationService.CreateReadNotification(data);
 
             return retVal;
         }

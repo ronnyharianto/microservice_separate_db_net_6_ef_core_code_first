@@ -9,8 +9,8 @@ namespace Falcon.BackEnd.Notifications.Domain
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
         public virtual DbSet<Notification> Notification { get; set; }
         public virtual DbSet<NotificationTemplate> NotificationTemplate { get; set; }
-        public virtual DbSet<ReadNotification> ReadNotif { get; set; }
-        public virtual DbSet<UserNotification> UserNotif { get; set; }
+        public virtual DbSet<ReadNotification> ReadNotification { get; set; }
+        public virtual DbSet<UserNotification> UserNotification { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.UseSerialColumns();

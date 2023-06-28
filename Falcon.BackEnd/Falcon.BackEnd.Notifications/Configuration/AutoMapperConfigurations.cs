@@ -10,6 +10,7 @@ namespace Falcon.BackEnd.Notifications.Configuration
         public AutoMapperConfigurations()
         {
             CreateMap<NotificationInput, NotificationDto>();
+            CreateMap<NotificationDto, Notification>();
             CreateMap<UserNotificationInput, UserNotification>();
             CreateMap<UserNotification, UserNotificationDto>();
             CreateMap<NotificationTemplateInput, NotificationTemplateDto>();

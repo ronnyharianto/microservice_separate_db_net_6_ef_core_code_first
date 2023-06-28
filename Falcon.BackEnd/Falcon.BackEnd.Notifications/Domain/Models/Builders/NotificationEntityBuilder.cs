@@ -15,8 +15,8 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 .Property(e => e.Target);
 
             builder
-                .Property(e => e.ReceiveUserId);
-                //.IsRequired(false);
+                .Property(e => e.ReceiveUserId)
+                .IsRequired(false);
 
             builder
                 .Property(e => e.Title);
@@ -29,7 +29,7 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 .IsRequired(false);
 
             builder
-                .Property(e => e.TotalAudiance);
+                .Property(e => e.TotalAudience);
 
             DataSeeding(builder);
 
@@ -47,7 +47,7 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                     Content = "Visit Plan 110 Telah Di Reject",
                     NotificationCode = "RejectVisitPlan",
                     Category = "Activity",
-                    TotalAudiance = 1
+                    TotalAudience = 1
 
                 });
 
@@ -61,7 +61,7 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                     Content = "POA 111 Sudah Di Approve",
                     NotificationCode = "ApprovePOA",
                     Category = "Activity",
-                    TotalAudiance = 1
+                    TotalAudience = 1
                 });
 
             

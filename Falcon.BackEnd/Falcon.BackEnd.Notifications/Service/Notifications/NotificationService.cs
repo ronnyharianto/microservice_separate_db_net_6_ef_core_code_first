@@ -23,14 +23,52 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
         }
 
         #region Mutation
-        public async Task<ObjectResult<NotificationDto>> CreateNotif(NotificationInput input)
+        public async Task<ObjectResult<NotificationDto>> CreateNotification(NotificationInput input)
         {
             int result = 0;
             var retVal = new ObjectResult<NotificationDto>(ServiceResultCode.BadRequest);
 
-            foreach (string target in input.Target)
+            var receiveUserId = _dbContext.UserNotification.Where(e => input.Target.Contains(e.FcmToken)).ToList();
+            var notificationCode = _dbContext.NotificationTemplate.Where(e => e.Code == input.NotificationCode).FirstOrDefault();
+
+            List<NotificationDto> resultList = new List<NotificationDto>();
+
+            if (notificationCode != null && receiveUserId.Count != 0)
             {
-                var sendNotif = await _firebaseNotificationHelper.SendNotif(_fcmNotificationSetting.ServerKey, target, input.Body, input.Title);
+                foreach (var data in receiveUserId)
+                {
+                    resultList.Add(new NotificationDto
+                    {
+                        Target = data.FcmToken,
+                        ReceiveUserId = data.UserId,
+                        Title = notificationCode.Title,
+                        Content = $"{notificationCode.Title} {input.Body} {notificationCode.Body}",
+                        Category = input.Category,
+                        NotificationCode = notificationCode.Code,
+                        TotalAudience = 1
+                    });
+                }
+            }
+            else
+            {
+                resultList.Add(new NotificationDto 
+                {
+                    Target = input.Target.First(),
+                    Title = input.Title!,
+                    Content = input.Body,
+                    Category = input.Category,
+                    TotalAudience = _dbContext.UserNotification.Count()
+                });
+
+            }
+
+            foreach (var notif in resultList)
+            {
+                var newData = _mapper.Map<NotificationDto, Notification>(notif);
+
+                _dbContext.Notification.Add(newData); 
+
+                var sendNotif = await _firebaseNotificationHelper.SendNotif(_fcmNotificationSetting.ServerKey, notif.Target, notif.Content, notif.Title);
 
                 if (sendNotif.Succeeded == true)
                 {
@@ -40,14 +78,14 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
 
             if (result > 0)
             {
-                retVal.Obj = _mapper.Map<NotificationDto>(input);
+                //retVal.Obj = _mapper.Map<NotificationDto>(input);
                 retVal.OK("notif complete by Target(Topic or User) " + $"{result}" + "/" + $"{input.Target.Count}");
             }
 
             return retVal;
         }
 
-        public ObjectResult<UserNotificationDto> CreateUserNotif(UserNotificationInput input)
+        public ObjectResult<UserNotificationDto> CreateUserNotification(UserNotificationInput input)
         {
             var retVal = new ObjectResult<UserNotificationDto>(ServiceResultCode.BadRequest);
 
@@ -55,7 +93,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
 
             if (newData != null)
             {
-                _dbContext.UserNotif.Add(newData);
+                _dbContext.UserNotification.Add(newData);
 
                 retVal.Obj = _mapper.Map<UserNotification, UserNotificationDto>(newData);
                 retVal.OK(null);
@@ -64,7 +102,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
             return retVal;
         }
         
-        public ObjectResult<NotificationTemplateDto> CreateNotifTemplate(NotificationTemplateInput input)
+        public ObjectResult<NotificationTemplateDto> CreateNotificationTemplate(NotificationTemplateInput input)
         {
             var retVal = new ObjectResult<NotificationTemplateDto>(ServiceResultCode.BadRequest);
 
@@ -81,7 +119,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
             return retVal;
         }
         
-        public ServiceResult UpdateNotifTemplate(NotificationTemplateUpdate input)
+        public ServiceResult UpdateNotificationTemplate(NotificationTemplateUpdate input)
         {
             var retVal = new ServiceResult(ServiceResultCode.NotFound);
 
@@ -99,7 +137,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
             return retVal;
         }
 
-        public ObjectResult<ReadNotificationDto> CreateReadNotif(ReadNotificationInput input)
+        public ObjectResult<ReadNotificationDto> CreateReadNotification(ReadNotificationInput input)
         {
             var retVal = new ObjectResult<ReadNotificationDto>(ServiceResultCode.BadRequest);
 
@@ -107,7 +145,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
 
             if (newData != null)
             {
-                _dbContext.ReadNotif.Add(newData);
+                _dbContext.ReadNotification.Add(newData);
 
                 retVal.Obj = _mapper.Map<ReadNotification, ReadNotificationDto>(newData);
                 retVal.OK(null);
@@ -119,7 +157,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
         #endregion
 
         #region Query
-        public ObjectResult<IQueryable<NotificationTemplate>> GetListAllNotifTemplate()
+        public ObjectResult<IQueryable<NotificationTemplate>> GetListAllNotificationTemplate()
         {
             var retVal = new ObjectResult<IQueryable<NotificationTemplate>>(ServiceResultCode.BadRequest)
             {
