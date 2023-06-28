@@ -1,6 +1,8 @@
+using Falcon.BackEnd.APIGateway.loggingmiddleware;
 using Falcon.Libraries.Security.JwtToken;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
+using Serilog;
 
 namespace Falcon.BackEnd.APIGateway
 {
@@ -31,6 +33,15 @@ namespace Falcon.BackEnd.APIGateway
             app.UseAuthentication();
 
             app.UseCors();
+
+            // Configure Serilog
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.Console()
+                // Add more Serilog configuration as needed
+                .CreateLogger();
+
+            // Register the custom logging middleware before Ocelot is configured
+            app.UseMiddleware<RequestResponseLoggingMiddleware>();
 
             app.UseOcelot().Wait();
 
