@@ -2,8 +2,13 @@ using Falcon.BackEnd.Products.Domain;
 using Falcon.BackEnd.Products.Service.Products;
 using Falcon.Libraries.Microservice.Startups;
 
-var app = new Startup<ApplicationDbContext>(args);
+var builder = WebApplication.CreateBuilder();
 
-app.Builder.Services.AddScoped<ProductService>();
+builder.UseMicroservice<ApplicationDbContext>()
+	   .UseRedis();
 
-app.Run();
+builder.Services.AddScoped<ProductService>();
+
+var app = builder.Build();
+
+app.RunMicroservice<ApplicationDbContext>();

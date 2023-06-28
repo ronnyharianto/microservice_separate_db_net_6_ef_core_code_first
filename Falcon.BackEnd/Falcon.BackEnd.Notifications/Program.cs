@@ -3,12 +3,17 @@ using Falcon.BackEnd.Notifications.Domain;
 using Falcon.BackEnd.Notifications.Service.Notifications;
 using Falcon.Libraries.Microservice.Startups;
 
-var app = new Startup<ApplicationDbContext>(args);
+var builder = WebApplication.CreateBuilder();
 
-app.Builder.Services.AddScoped<NotificationService>();
+builder.UseMicroservice<ApplicationDbContext>()
+	   .UseRedis();
+
+builder.Services.AddScoped<NotificationService>();
 
 // Configure strongly typed settings objects
-var appSettingsSection = app.Builder.Configuration.GetSection("FcmNotification");
-app.Builder.Services.Configure<FcmNotificationSetting>(appSettingsSection);
+var appSettingsSection = builder.Configuration.GetSection("FcmNotification");
+builder.Services.Configure<FcmNotificationSetting>(appSettingsSection);
 
-app.Run();
+var app = builder.Build();
+
+app.RunMicroservice<ApplicationDbContext>();
