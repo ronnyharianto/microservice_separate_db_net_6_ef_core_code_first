@@ -8,6 +8,5 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Entities
         public Guid UserNotificationId { get; set; }
         public virtual UserNotification? UserNotification { get; set; }
         public virtual Notification? Notification { get; set; }
-
     }
 }

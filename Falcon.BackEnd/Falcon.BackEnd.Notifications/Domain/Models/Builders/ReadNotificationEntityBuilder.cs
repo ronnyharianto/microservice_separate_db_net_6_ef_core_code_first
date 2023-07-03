@@ -12,12 +12,6 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
             base.Configure(builder);
 
             builder
-                .Property(e => e.NotificationId);
-
-            builder
-                .Property(e => e.UserNotificationId);
-
-            builder
                 .HasOne(e => e.Notification)
                 .WithMany(e => e.ReadNotification)
                 .HasForeignKey(e => e.NotificationId)

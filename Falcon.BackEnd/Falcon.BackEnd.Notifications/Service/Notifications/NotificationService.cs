@@ -22,7 +22,6 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
             _firebaseNotificationHelper = firebaseNotificationHelper;
         }
 
-        #region Mutation
         public async Task<ObjectResult<NotificationDto>> CreateNotification(NotificationInput input)
         {
             int result = 0;
@@ -31,7 +30,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
             var receiveUserId = _dbContext.UserNotification.Where(e => input.Target.Contains(e.FcmToken)).ToList();
             var notificationCode = _dbContext.NotificationTemplate.Where(e => e.Code == input.NotificationCode).FirstOrDefault();
 
-            List<NotificationDto> resultList = new List<NotificationDto>();
+            List<NotificationDto> resultList = new();
 
             if (notificationCode != null && receiveUserId.Count != 0)
             {
@@ -42,7 +41,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
                         Target = data.FcmToken,
                         ReceiveUserId = data.UserId,
                         Title = notificationCode.Title,
-                        Content = $"{notificationCode.Title} {input.Body} {notificationCode.Body}",
+                        Content = $"{notificationCode.Title} {input.Body} {notificationCode.Content}", // Perlu dilihat ulang dengan requirementnya
                         Category = input.Category,
                         NotificationCode = notificationCode.Code,
                         TotalAudience = 1
@@ -54,7 +53,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
                 resultList.Add(new NotificationDto 
                 {
                     Target = input.Target.First(),
-                    Title = input.Title!,
+                    Title = input.Title ?? string.Empty,
                     Content = input.Body,
                     Category = input.Category,
                     TotalAudience = _dbContext.UserNotification.Count()
@@ -62,23 +61,29 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
 
             }
 
+            /*
+             * 1. Simpan di database
+             * 2. Kirim banyak notifikasi dalam 1 kali request ke Firebase
+             * 3. Jika notif gagal dikirim, maka gagal kan operasi ke database juga (throw error)
+             * */
+
             foreach (var notif in resultList)
             {
                 var newData = _mapper.Map<NotificationDto, Notification>(notif);
 
-                _dbContext.Notification.Add(newData); 
+                _dbContext.Notification.Add(newData);
 
                 var sendNotif = await _firebaseNotificationHelper.SendNotif(_fcmNotificationSetting.ServerKey, notif.Target, notif.Content, notif.Title);
 
                 if (sendNotif.Succeeded == true)
                 {
+                    // throw error exception
                     result += 1;
                 }
             }
 
             if (result > 0)
             {
-                //retVal.Obj = _mapper.Map<NotificationDto>(input);
                 retVal.OK("notif complete by Target(Topic or User) " + $"{result}" + "/" + $"{input.Target.Count}");
             }
 
@@ -153,8 +158,6 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
 
             return retVal;
         }
-
-        #endregion
 
         #region Query
         public ObjectResult<IQueryable<NotificationTemplate>> GetListAllNotificationTemplate()

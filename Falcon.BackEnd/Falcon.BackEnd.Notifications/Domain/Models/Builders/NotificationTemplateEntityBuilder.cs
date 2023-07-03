@@ -11,14 +11,17 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
         {
             base.Configure(builder);
 
-            builder
-                .Property(e => e.Title);
+			builder
+				.Property(e => e.Code)
+                .HasMaxLength(20);
+
+			builder
+                .Property(e => e.Title)
+                .HasMaxLength(100);
 
             builder
-                .Property(e => e.Body);
-
-            builder
-                .Property(e => e.Code);
+                .Property(e => e.Description)
+                .HasMaxLength(250);
 
             DataSeeding(builder);
         }
@@ -30,73 +33,80 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 {
                     Id = Guid.NewGuid(),
                     Title = "Version",
-                    Body = "Version Terbaru Tersedia",
-                    Code = "UpgradeVersion"
-
+                    Content = "Version Terbaru Tersedia",
+                    Code = "UpgradeVersion",
+                    Description = ""
                 });
+
+            builder
+                .HasData(new NotificationTemplate()
+                {
+                    Id = Guid.NewGuid(),
+                    Title = "Partner Telah Disetujui",
+                    Content = "Partner [PartnerName] telah disetujui oleh [Jabatan]",
+                    Code = "ApprovePartner",
+					Description = ""
+				});
 
             builder
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
                     Title = "Partner",
-                    Body = "Sudah Di Approve",
-                    Code = "ApprovePartner"
-                });
-
-            builder
-                .HasData(new NotificationTemplate()
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Partner",
-                    Body = "Telah Di Reject",
-                    Code = "RejectPartner"
-                });
+                    Content = "Telah Di Reject",
+                    Code = "RejectPartner",
+					Description = ""
+				});
 
             builder
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
                     Title = "Visit Plan",
-                    Body = "Sudah Di Approve",
-                    Code = "ApproveVisitPlan"
-                });
+                    Content = "Sudah Di Approve",
+                    Code = "ApproveVisitPlan",
+					Description = ""
+				});
 
             builder
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
                     Title = "Visit Plan",
-                    Body = "Telah Di Reject",
-                    Code = "RejectVisitPlan"
-                });
+                    Content = "Telah Di Reject",
+                    Code = "RejectVisitPlan",
+					Description = ""
+				});
 
             builder
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
                     Title = "POA",
-                    Body = "Sudah Di Approve",
-                    Code = "ApprovePOA"
-                });
+                    Content = "Sudah Di Approve",
+                    Code = "ApprovePOA",
+					Description = ""
+				});
 
             builder
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
                     Title = "POA",
-                    Body = "Telah Di Reject",
-                    Code = "RejectPOA"
-                });
+                    Content = "Telah Di Reject",
+                    Code = "RejectPOA",
+					Description = ""
+				});
 
             builder
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
                     Title = "Outlet",
-                    Body = "Request Approval",
-                    Code = "CreateOutlet"
-                });
+                    Content = "Request Approval",
+                    Code = "CreateOutlet",
+					Description = ""
+				});
         }
     }
 }

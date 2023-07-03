@@ -1,6 +1,6 @@
 ﻿using Falcon.BackEnd.Notifications.Domain.Models.Entities;
 using Falcon.Libraries.DataAccess.Domain;
-using Microsoft.EntityFrameworkCore;
+using Falcon.Models.Enums;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
@@ -12,27 +12,27 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
             base.Configure(builder);
 
             builder
-                .Property(e => e.Target);
+                .Property(x => x.Category)
+                .HasConversion<string>()
+                .HasMaxLength(20);
 
             builder
-                .Property(e => e.ReceiveUserId)
-                .IsRequired(false);
+                .Property(e => e.Target)
+                .HasMaxLength(200);
 
             builder
-                .Property(e => e.Title);
-
-            builder
-                .Property(e => e.Content);
+                .Property(e => e.Title)
+                .HasMaxLength(100);
 
             builder
                 .Property(e => e.NotificationCode)
-                .IsRequired(false);
+                .HasMaxLength(20);
 
-            builder
-                .Property(e => e.TotalAudience);
+			builder
+				.Property(e => e.TitleTemplate)
+				.HasMaxLength(100);
 
             DataSeeding(builder);
-
         }
 
         private static void DataSeeding(EntityTypeBuilder<Notification> builder)
@@ -46,9 +46,8 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                     Title = "Visit Plan",
                     Content = "Visit Plan 110 Telah Di Reject",
                     NotificationCode = "RejectVisitPlan",
-                    Category = "Activity",
+                    Category = NotificationCategory.Activity,
                     TotalAudience = 1
-
                 });
 
             builder
@@ -60,11 +59,9 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                     Title = "POA",
                     Content = "POA 111 Sudah Di Approve",
                     NotificationCode = "ApprovePOA",
-                    Category = "Activity",
+                    Category = NotificationCategory.Activity,
                     TotalAudience = 1
                 });
-
-            
         }
     }
 }

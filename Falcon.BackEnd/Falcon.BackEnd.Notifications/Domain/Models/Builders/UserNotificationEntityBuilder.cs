@@ -11,13 +11,12 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
             base.Configure(builder);
 
             builder
-                .Property(e => e.UserId);
+                .Property(e => e.FcmToken)
+                .HasMaxLength(200);
 
             builder
-                .Property(e => e.FcmToken);
-
-            builder
-                .Property(e => e.UserName);
+                .Property(e => e.UserName)
+                .HasMaxLength(50);
 
             DataSeeding(builder);
         }
