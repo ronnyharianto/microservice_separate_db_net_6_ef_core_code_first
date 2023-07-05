@@ -1,15 +1,28 @@
-﻿using Falcon.Libraries.Common.Helper;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Microsoft.Extensions.Hosting;
+using Ocelot.Middleware;
 
 namespace Falcon.Libraries.Microservice.Startups
 {
 	public static class WebApplicationExtensions
 	{
+		public static WebApplication RunApiGateway<TApplication>(this WebApplication app)
+		{
+            app.UseAuthentication();
+
+            app.UseCors();
+
+            app.UseMiddleware<TApplication>();
+
+            app.UseOcelot().Wait();
+
+            app.Run();
+
+            return app;
+		}
 		public static WebApplication RunMicroservice<TApplicationDbContext>(this WebApplication app)
 			where TApplicationDbContext : DbContext
 		{

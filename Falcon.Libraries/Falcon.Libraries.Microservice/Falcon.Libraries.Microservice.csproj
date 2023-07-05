@@ -16,6 +16,7 @@
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.16" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.16" />
+    <PackageReference Include="Ocelot" Version="18.0.0" />
     <PackageReference Include="Serilog.AspNetCore" Version="7.0.0" />
     <PackageReference Include="Serilog.Exceptions" Version="8.4.0" />
     <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="9.0.1" />
@@ -26,6 +27,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Falcon.Libraries.Common\Falcon.Libraries.Common.csproj" />
     <ProjectReference Include="..\Falcon.Libraries.Domain\Falcon.Libraries.DataAccess.csproj" />
+    <ProjectReference Include="..\Falcon.Libraries.Security\Falcon.Libraries.Security.csproj" />
   </ItemGroup>
 
 </Project>

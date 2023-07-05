@@ -6,6 +6,7 @@ using Falcon.Libraries.Microservice.Startups;
 var builder = WebApplication.CreateBuilder();
 
 builder.UseMicroservice<ApplicationDbContext>()
+	   .UseLogging()
 	   .UseRedis();
 
 builder.Services.AddScoped<NotificationService>();

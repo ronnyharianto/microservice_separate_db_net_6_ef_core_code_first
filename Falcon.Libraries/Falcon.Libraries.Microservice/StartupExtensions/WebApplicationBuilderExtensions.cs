@@ -12,6 +12,8 @@ using Serilog.Sinks.Elasticsearch;
 using Serilog;
 using System.Reflection;
 using Serilog.Exceptions;
+using Ocelot.DependencyInjection;
+using Falcon.Libraries.Security.JwtToken;
 
 namespace Falcon.Libraries.Microservice.Startups
 {
@@ -113,6 +115,67 @@ namespace Falcon.Libraries.Microservice.Startups
 			builder.Services.AddHttpClient<HttpClientHelper>();
 			#endregion
 
+			return builder;
+		}
+
+		public static WebApplicationBuilder UseRedis(this WebApplicationBuilder builder)
+		{
+			builder.Services.AddStackExchangeRedisCache(option =>
+			{
+				option.Configuration = builder.Configuration.GetConnectionString("redis");
+				option.InstanceName = "Falcon-Redis";
+			});
+
+			builder.Services.AddScoped<CacheHelper>();
+
+			return builder;
+		}
+
+        public static WebApplicationBuilder UseLogging(this WebApplicationBuilder builder)
+        {
+            var callingAssembly = Assembly.GetCallingAssembly();
+
+            var elasticUri = builder.Configuration.GetConnectionString("elasticsearch");
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+                .Build();
+
+            var loggerConfig = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.WithExceptionDetails()
+                .ReadFrom.Configuration(configuration)
+                .WriteTo.Console();
+
+            if (elasticUri != null)
+            {
+                var callingAssemblyName = callingAssembly.GetName().Name ?? "Unknown";
+
+                loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+                {
+                    AutoRegisterTemplate = true,
+                    IndexFormat = $"{callingAssemblyName.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
+                });
+            }
+
+            Log.Logger = loggerConfig.CreateLogger();
+
+            builder.Services.AddHttpLogging(logging =>
+            {
+                logging.LoggingFields = HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseBody;
+
+                logging.RequestBodyLogLimit = 4096;
+                logging.ResponseBodyLogLimit = 4096;
+            });
+
+            builder.Host.UseSerilog();
+
+            return builder;
+        }
+
+        public static WebApplicationBuilder UseApiGatewayService(this WebApplicationBuilder builder)
+        {
+            var callingAssembly = Assembly.GetCallingAssembly();
+
 			#region Configure Logging
 			var elasticUri = builder.Configuration.GetConnectionString("elasticsearch");
 			var configuration = new ConfigurationBuilder()
@@ -138,31 +201,32 @@ namespace Falcon.Libraries.Microservice.Startups
 
 			Log.Logger = loggerConfig.CreateLogger();
 
-			builder.Services.AddHttpLogging(logging =>
-			{
-				logging.LoggingFields = HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseBody;
-
-				logging.RequestBodyLogLimit = 4096;
-				logging.ResponseBodyLogLimit = 4096;
-			});
-
 			builder.Host.UseSerilog();
 			#endregion
 
-			return builder;
-		}
+			#region Ocelot
+			builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+            builder.Services.AddOcelot(builder.Configuration);
+            #endregion
 
-		public static WebApplicationBuilder UseRedis(this WebApplicationBuilder builder)
-		{
-			builder.Services.AddStackExchangeRedisCache(option =>
-			{
-				option.Configuration = builder.Configuration.GetConnectionString("redis");
-				option.InstanceName = "Falcon-Redis";
-			});
+            #region Jwt Bearer
+            builder.Services.AddAuthentication()
+                .AddJwtBearer("jwt-schema", JwtTokenOption.OptionValidation);
+            #endregion
 
-			builder.Services.AddScoped<CacheHelper>();
+            #region Cors
+            builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://localhost:7000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+            #endregion
 
-			return builder;
+            return builder;
 		}
 	}
 }
