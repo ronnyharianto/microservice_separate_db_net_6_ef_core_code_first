@@ -2,6 +2,6 @@
 {
 	public static class ApplicationConstants
 	{
-		private const string TopicSentToAll = "/topics/general";
+		public const string TopicSentToAll = "/topics/general";
 	}
 }

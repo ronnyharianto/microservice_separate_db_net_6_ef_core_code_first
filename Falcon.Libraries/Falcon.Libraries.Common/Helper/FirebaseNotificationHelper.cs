@@ -1,7 +1,10 @@
 ﻿using Falcon.Libraries.Common.Constants;
 using Falcon.Libraries.Common.Enums;
 using Falcon.Libraries.Common.Object;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
+using System.Dynamic;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -15,7 +18,7 @@ namespace Falcon.Libraries.Common.Helper
             _jsonHelper = jsonHelper;
         }
 
-        public async Task<ServiceResult> SendNotif(string serverKey, string target, string contentBody, string contentTitle)
+        public async Task<ServiceResult> SendNotif(string serverKey, List<string> target, string contentBody, string contentTitle, bool IsSentToAll)
         {
             var retval = new ServiceResult(ServiceResultCode.BadRequest);
 
@@ -24,22 +27,40 @@ namespace Falcon.Libraries.Common.Helper
             client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
             client.DefaultRequestHeaders.TryAddWithoutValidation("Authorization", $"key={serverKey}");
 
-            var data = new
+            IList<string> strings = target;
+            string joined = string.Join(",", strings);
+
+            dynamic data = new ExpandoObject();
+
+            if (!IsSentToAll)
             {
-                to = target,
-                notification = new
+                data = new
                 {
-                    body = contentBody,
-                    title = contentTitle
-                }
-            };
+                    registration_ids = target,
+                    notification = new
+                    {
+                        body = contentBody,
+                        title = contentTitle
+                    }
+                };
+            }
+            else
+            {
+                data = new
+                {
+                    to = joined,
+                    notification = new
+                    {
+                        body = contentBody,
+                        title = contentTitle
+                    }
+                };
+            }
 
             var json = _jsonHelper.SerializeObject(data);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var results = await client.PostAsync(ServiceConstants.FirebaseCloudMessagingService, httpContent);
-
-            if (results.IsSuccessStatusCode)
+            HttpResponseMessage response = await client.PostAsync(ServiceConstants.FirebaseCloudMessagingService, httpContent);
+            if (response.IsSuccessStatusCode)
             {
                 retval.OK(null);
             }

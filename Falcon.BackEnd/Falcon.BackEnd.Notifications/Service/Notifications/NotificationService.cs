@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Falcon.BackEnd.Notifications.Configuration;
 using Falcon.BackEnd.Notifications.Controllers.Notifications.CustomModels;
 using Falcon.BackEnd.Notifications.Controllers.Notifications.Inputs;
 using Falcon.BackEnd.Notifications.Domain;
@@ -27,38 +28,41 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
             int result = 0;
             var retVal = new ObjectResult<NotificationDto>(ServiceResultCode.BadRequest);
 
-            var receiveUserId = _dbContext.UserNotification.Where(e => input.Target.Contains(e.FcmToken)).ToList();
-            var notificationCode = _dbContext.NotificationTemplate.Where(e => e.Code == input.NotificationCode).FirstOrDefault();
+            var userNotifications = _dbContext.UserNotification.Where(e => input.Target.Contains(e.UserName)).ToList();
+            List<string> fcmToken = userNotifications.Select(e => e.FcmToken).ToList();
+            var notificationTemplate= _dbContext.NotificationTemplate.Where(e => e.Code == input.NotificationCode).FirstOrDefault();
 
             List<NotificationDto> resultList = new();
 
-            if (notificationCode != null && receiveUserId.Count != 0)
+            if (input.IsSentToAll == false)
             {
-                foreach (var data in receiveUserId)
+                foreach (var data in userNotifications)
                 {
                     resultList.Add(new NotificationDto
                     {
+                        Category = input.Category,
                         Target = data.FcmToken,
                         ReceiveUserId = data.UserId,
-                        Title = notificationCode.Title,
-                        Content = $"{notificationCode.Title} {input.Body} {notificationCode.Content}", // Perlu dilihat ulang dengan requirementnya
-                        Category = input.Category,
-                        NotificationCode = notificationCode.Code,
+                        Title = notificationTemplate == null ? string.Empty : notificationTemplate.Title,
+                        Body = notificationTemplate == null ? string.Empty : $"{input.ProgramName} {notificationTemplate.Content} {input.ToPosition}", // Perlu dilihat ulang dengan requirementnya
+                        NotificationCode = notificationTemplate == null ? string.Empty : notificationTemplate.Code,
+                        TitleTemplate = notificationTemplate == null ? string.Empty : notificationTemplate.Title,
+                        ContentTemplate = notificationTemplate == null ? string.Empty : notificationTemplate.Content,
                         TotalAudience = 1
                     });
                 }
             }
             else
             {
+                fcmToken.Add(ApplicationConstants.TopicSentToAll);
                 resultList.Add(new NotificationDto 
                 {
-                    Target = input.Target.First(),
+                    Target = ApplicationConstants.TopicSentToAll,
                     Title = input.Title ?? string.Empty,
-                    Content = input.Body,
+                    Body = input.Body,
                     Category = input.Category,
                     TotalAudience = _dbContext.UserNotification.Count()
                 });
-
             }
 
             /*
@@ -66,25 +70,25 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
              * 2. Kirim banyak notifikasi dalam 1 kali request ke Firebase
              * 3. Jika notif gagal dikirim, maka gagal kan operasi ke database juga (throw error)
              * */
+            
+            var newData = _mapper.Map<List<Notification>>(resultList);
 
-            foreach (var notif in resultList)
+            _dbContext.Notification.AddRange(newData);
+
+            var sendNotif = await _firebaseNotificationHelper.SendNotif(_fcmNotificationSetting.ServerKey, fcmToken, newData.First().Body, newData.First().Title, input.IsSentToAll);
+
+            if (sendNotif.Succeeded == true)
             {
-                var newData = _mapper.Map<NotificationDto, Notification>(notif);
-
-                _dbContext.Notification.Add(newData);
-
-                var sendNotif = await _firebaseNotificationHelper.SendNotif(_fcmNotificationSetting.ServerKey, notif.Target, notif.Content, notif.Title);
-
-                if (sendNotif.Succeeded == true)
-                {
-                    // throw error exception
-                    result += 1;
-                }
+                result += 1;
+            }
+            else
+            {
+                throw new Exception("Gagal Kirim Notif");
             }
 
             if (result > 0)
             {
-                retVal.OK("notif complete by Target(Topic or User) " + $"{result}" + "/" + $"{input.Target.Count}");
+                retVal.OK("notif complete");
             }
 
             return retVal;
@@ -101,7 +105,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
                 _dbContext.UserNotification.Add(newData);
 
                 retVal.Obj = _mapper.Map<UserNotification, UserNotificationDto>(newData);
-                retVal.OK(null);
+                retVal.OK("User Notification Has Created");
             }
 
             return retVal;
@@ -118,7 +122,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
                 _dbContext.NotificationTemplate.Add(newData);
 
                 retVal.Obj = _mapper.Map<NotificationTemplate, NotificationTemplateDto>(newData);
-                retVal.OK(null);
+                retVal.OK("Notification Template Has Created");
             }
 
             return retVal;
@@ -136,7 +140,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
 
                 _dbContext.NotificationTemplate.Update(searchDataNotifTemplate);
 
-                retVal.OK(null);
+                retVal.OK("Update Notification Success");
             }
 
             return retVal;
@@ -153,7 +157,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
                 _dbContext.ReadNotification.Add(newData);
 
                 retVal.Obj = _mapper.Map<ReadNotification, ReadNotificationDto>(newData);
-                retVal.OK(null);
+                retVal.OK("Read Notification Has Created");
             }
 
             return retVal;
@@ -166,7 +170,7 @@ namespace Falcon.BackEnd.Notifications.Service.Notifications
             {
                 Obj = _dbContext.NotificationTemplate.AsQueryable()
             };
-            retVal.OK(null);
+            retVal.OK("OK");
 
             return retVal;
         }

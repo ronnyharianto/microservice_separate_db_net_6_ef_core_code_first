@@ -32,7 +32,7 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
-                    Title = "Version",
+                    Title = "Upgrade Version",
                     Content = "Version Terbaru Tersedia",
                     Code = "UpgradeVersion",
                     Description = ""
@@ -43,7 +43,7 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 {
                     Id = Guid.NewGuid(),
                     Title = "Partner Telah Disetujui",
-                    Content = "Partner [PartnerName] telah disetujui oleh [Jabatan]",
+                    Content = "Sudah Di Approve Oleh",
                     Code = "ApprovePartner",
 					Description = ""
 				});
@@ -52,8 +52,8 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
-                    Title = "Partner",
-                    Content = "Telah Di Reject",
+                    Title = "Partner Telah Di Reject",
+                    Content = "Telah Di Reject Oleh",
                     Code = "RejectPartner",
 					Description = ""
 				});
@@ -62,8 +62,8 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
-                    Title = "Visit Plan",
-                    Content = "Sudah Di Approve",
+                    Title = "Visit Plan Sudah Di Approve",
+                    Content = "Sudah Di Approve Oleh",
                     Code = "ApproveVisitPlan",
 					Description = ""
 				});
@@ -72,8 +72,8 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
-                    Title = "Visit Plan",
-                    Content = "Telah Di Reject",
+                    Title = "Visit Plan Telah Di Reject",
+                    Content = "Telah Di Reject Oleh",
                     Code = "RejectVisitPlan",
 					Description = ""
 				});
@@ -82,8 +82,8 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
-                    Title = "POA",
-                    Content = "Sudah Di Approve",
+                    Title = "POA Sudah Di Approve",
+                    Content = "Sudah Di Approve Oleh",
                     Code = "ApprovePOA",
 					Description = ""
 				});
@@ -92,8 +92,8 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
-                    Title = "POA",
-                    Content = "Telah Di Reject",
+                    Title = "POA Telah Di Reject",
+                    Content = "Telah Di Reject Oleh",
                     Code = "RejectPOA",
 					Description = ""
 				});
@@ -102,8 +102,8 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
                 .HasData(new NotificationTemplate()
                 {
                     Id = Guid.NewGuid(),
-                    Title = "Outlet",
-                    Content = "Request Approval",
+                    Title = "Outlet Request Approval",
+                    Content = "Request Approval Kepada",
                     Code = "CreateOutlet",
 					Description = ""
 				});

@@ -11,5 +11,7 @@ namespace Falcon.BackEnd.Notifications.Controllers.Notifications.Inputs
         public string? NotificationCode { get; set; }
 		public string? Title { get; set; }
 		public string Body { get; set; } = string.Empty;
-	}
+        public string? ProgramName { get; set; }
+        public string? ToPosition { get; set; }
+    }
 }
