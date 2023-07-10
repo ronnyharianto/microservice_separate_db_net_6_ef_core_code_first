@@ -115,6 +115,10 @@ namespace Falcon.Libraries.Microservice.Startups
 			builder.Services.AddHttpClient<HttpClientHelper>();
 			#endregion
 
+			#region Configure Logging + HttpLogging
+			builder.UseLogging().UseHttpLogging();
+			#endregion
+
 			return builder;
 		}
 
@@ -131,52 +135,43 @@ namespace Falcon.Libraries.Microservice.Startups
 			return builder;
 		}
 
-        public static WebApplicationBuilder UseLogging(this WebApplicationBuilder builder)
-        {
-            var callingAssembly = Assembly.GetCallingAssembly();
-
-            var elasticUri = builder.Configuration.GetConnectionString("elasticsearch");
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .Build();
-
-            var loggerConfig = new LoggerConfiguration()
-                .Enrich.FromLogContext()
-                .Enrich.WithExceptionDetails()
-                .ReadFrom.Configuration(configuration)
-                .WriteTo.Console();
-
-            if (elasticUri != null)
-            {
-                var callingAssemblyName = callingAssembly.GetName().Name ?? "Unknown";
-
-                loggerConfig.WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
-                {
-                    AutoRegisterTemplate = true,
-                    IndexFormat = $"{callingAssemblyName.ToLower().Replace(".", "-")}-{DateTime.UtcNow:yyyy-MM}"
-                });
-            }
-
-            Log.Logger = loggerConfig.CreateLogger();
-
-            builder.Services.AddHttpLogging(logging =>
-            {
-                logging.LoggingFields = HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseBody;
-
-                logging.RequestBodyLogLimit = 4096;
-                logging.ResponseBodyLogLimit = 4096;
-            });
-
-            builder.Host.UseSerilog();
-
-            return builder;
-        }
-
         public static WebApplicationBuilder UseApiGatewayService(this WebApplicationBuilder builder)
         {
             var callingAssembly = Assembly.GetCallingAssembly();
 
 			#region Configure Logging
+			builder.UseLogging();
+			#endregion
+
+			#region Configure Ocelot
+			builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
+            builder.Services.AddOcelot(builder.Configuration);
+			#endregion
+
+			#region Configure Jwt Bearer
+			builder.Services.AddAuthentication()
+                .AddJwtBearer("jwt-schema", JwtTokenOption.OptionValidation);
+			#endregion
+
+			#region Configure Cors
+			builder.Services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("https://localhost:7000")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+            #endregion
+
+            return builder;
+		}
+
+		private static WebApplicationBuilder UseLogging(this WebApplicationBuilder builder)
+		{
+			var callingAssembly = Assembly.GetCallingAssembly();
+
 			var elasticUri = builder.Configuration.GetConnectionString("elasticsearch");
 			var configuration = new ConfigurationBuilder()
 				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -202,31 +197,21 @@ namespace Falcon.Libraries.Microservice.Startups
 			Log.Logger = loggerConfig.CreateLogger();
 
 			builder.Host.UseSerilog();
-			#endregion
 
-			#region Ocelot
-			builder.Configuration.AddJsonFile("ocelot.json", optional: false, reloadOnChange: true);
-            builder.Services.AddOcelot(builder.Configuration);
-            #endregion
+			return builder;
+		}
 
-            #region Jwt Bearer
-            builder.Services.AddAuthentication()
-                .AddJwtBearer("jwt-schema", JwtTokenOption.OptionValidation);
-            #endregion
+		private static WebApplicationBuilder UseHttpLogging(this WebApplicationBuilder builder)
+		{
+			builder.Services.AddHttpLogging(logging =>
+			{
+				logging.LoggingFields = HttpLoggingFields.RequestBody | HttpLoggingFields.ResponseBody;
 
-            #region Cors
-            builder.Services.AddCors(options =>
-            {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder.WithOrigins("https://localhost:7000")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod();
-                });
-            });
-            #endregion
+				logging.RequestBodyLogLimit = 4096;
+				logging.ResponseBodyLogLimit = 4096;
+			});
 
-            return builder;
+			return builder;
 		}
 	}
 }

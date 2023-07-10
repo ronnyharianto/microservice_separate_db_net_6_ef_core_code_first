@@ -23,6 +23,7 @@ namespace Falcon.Libraries.Microservice.Startups
 
             return app;
 		}
+
 		public static WebApplication RunMicroservice<TApplicationDbContext>(this WebApplication app)
 			where TApplicationDbContext : DbContext
 		{

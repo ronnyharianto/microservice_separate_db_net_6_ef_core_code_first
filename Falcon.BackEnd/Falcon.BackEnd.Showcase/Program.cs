@@ -3,8 +3,7 @@ using Falcon.Libraries.Microservice.Startups;
 
 var builder = WebApplication.CreateBuilder();
 
-builder.UseMicroservice<ApplicationDbContext>()
-       .UseLogging();
+builder.UseMicroservice<ApplicationDbContext>();
 
 var app = builder.Build();
 
