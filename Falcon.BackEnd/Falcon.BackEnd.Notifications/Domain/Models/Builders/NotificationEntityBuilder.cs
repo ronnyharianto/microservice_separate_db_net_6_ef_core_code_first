@@ -12,7 +12,7 @@ namespace Falcon.BackEnd.Notifications.Domain.Models.Builders
             base.Configure(builder);
 
             builder
-                .Property(x => x.Category)
+                .Property(e => e.Category)
                 .HasConversion<string>()
                 .HasMaxLength(20);
 
