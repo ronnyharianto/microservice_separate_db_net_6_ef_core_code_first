@@ -61,8 +61,8 @@ namespace Falcon.BackEnd.APIGateway.Service.APIGateway
             {
                 objRequestData = new 
                 {
-                    TxtPassword = input.UserName,
-                    TxtPegawaiID = input.Password
+                    TxtPegawaiID = input.UserName,
+                    TxtPassword = input.Password
                 }
             };
 
