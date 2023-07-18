@@ -4,6 +4,18 @@
     },
     "Routes": [
         {
+            "UpstreamPathTemplate": "/apigateway/{catchAll}",
+            "UpstreamHttpMethod": [ "Get", "Post" ],
+            "DownstreamPathTemplate": "/api/v1/apigateway/{catchAll}",
+            "DownstreamScheme": "http",
+            "DownstreamHostAndPorts": [
+                {
+                    "Host": "localhost",
+                    "Port": 5001
+                }
+            ]
+        },
+        {
             "UpstreamPathTemplate": "/product/{catchAll}",
             "UpstreamHttpMethod": [ "Get", "Post" ],
             "DownstreamPathTemplate": "/api/v1/product/{catchAll}",

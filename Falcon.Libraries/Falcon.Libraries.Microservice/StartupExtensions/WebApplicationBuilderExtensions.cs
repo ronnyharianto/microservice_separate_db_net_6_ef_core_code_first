@@ -135,12 +135,67 @@ namespace Falcon.Libraries.Microservice.Startups
 			return builder;
 		}
 
-        public static WebApplicationBuilder UseApiGatewayService(this WebApplicationBuilder builder)
+        public static WebApplicationBuilder UseApiGatewayService<TApplicationDbContext>(this WebApplicationBuilder builder)
+            where TApplicationDbContext : DbContext
         {
             var callingAssembly = Assembly.GetCallingAssembly();
 
-			#region Configure Logging
-			builder.UseLogging();
+            #region Configure General
+            builder.Services.AddScoped<JsonHelper>();
+            #endregion
+
+            #region Configure Controller
+            // Add services to the container.
+            builder.Services.AddControllers(
+                options =>
+                {
+                    //Add transaction filter to apply transaction scope for each request on controller
+                    options.Filters.Add<TransactionFilterAttribute<TApplicationDbContext>>();
+                })
+                .AddNewtonsoftJson(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            #endregion
+
+            #region Configure Db Context
+            // Add db context
+            builder.Services.AddDbContext<TApplicationDbContext>(
+                options => options.UseNpgsql(builder.Configuration.GetConnectionString("postgreSQL"))
+            );
+            #endregion
+
+            #region Configure Fluent Validation
+            // Register all validator to the service container
+            var validators = callingAssembly
+                                     .GetTypes()
+                                     .Where(x => !x.IsAbstract && !x.IsInterface && typeof(IValidator).IsAssignableFrom(x))
+                                     .ToList();
+
+            foreach (var validator in validators)
+            {
+                var baseType = validator.BaseType;
+                var genericArgsBaseType = baseType?.GetGenericArguments().FirstOrDefault();
+
+                if (genericArgsBaseType != null)
+                {
+                    var genericValidatorType = typeof(IValidator<>).MakeGenericType(genericArgsBaseType);
+                    builder.Services.AddScoped(genericValidatorType, validator);
+                }
+            }
+
+            // Run validation using fluentvalidation every request in controller
+            builder.Services.AddFluentValidationAutoValidation();
+            #endregion
+
+            #region Configure Auto Mapper
+            builder.Services.AddAutoMapper(callingAssembly);
+            #endregion
+
+            #region Configure Http Client
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddHttpClient<HttpClientHelper>();
+            #endregion
+
+            #region Configure Logging
+            builder.UseLogging();
 			#endregion
 
 			#region Configure Ocelot

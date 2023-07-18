@@ -17,7 +17,7 @@ namespace Falcon.BackEnd.APIGateway.loggingmiddleware
         private bool TargetRoute(PathString path)
         {
             // Add Route
-            return path.StartsWithSegments("/product") ||
+            return path.StartsWithSegments("/apigateway") ||
                    path.StartsWithSegments("/notification");
         }
 
