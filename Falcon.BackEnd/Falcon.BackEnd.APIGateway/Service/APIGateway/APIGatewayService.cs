@@ -2,6 +2,7 @@
 using Falcon.BackEnd.APIGateway.Controllers.APIGateway.CustomModels;
 using Falcon.BackEnd.APIGateway.Controllers.APIGateway.Inputs;
 using Falcon.BackEnd.APIGateway.Domain;
+using Falcon.BackEnd.APIGateway.Domain.Model.Entities;
 using Falcon.BackEnd.APIGateway.loggingmiddleware;
 using Falcon.Libraries.Common.Enums;
 using Falcon.Libraries.Common.Helper;
@@ -75,10 +76,22 @@ namespace Falcon.BackEnd.APIGateway.Service.APIGateway
 
             var responseLoginObject = JsonConvert.DeserializeObject(responseLoginContent);
 
-            if (responseLoginContent != null)
+            if (responseLoginContent != null && responseObject != null)
             {
                 retVal.Obj = responseLoginObject;
-                retVal.OK("succeced");
+
+                var dataLogin = new LoginDto
+                {
+                    Token = responseObject.access_token,
+                    ExpiredDate = DateTime.UtcNow.AddSeconds(responseObject.expires_in),
+                };
+
+                var newData = _mapper.Map<Login>(dataLogin);
+
+                _dbContext.Login.Add(newData);
+                _dbContext.SaveChanges();
+
+                retVal.OK("Succeced");
             }
 
             return retVal;

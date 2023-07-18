@@ -12,7 +12,8 @@ namespace Falcon.BackEnd.APIGateway.Domain.Model.Builders
             base.Configure(builder);
 
             builder
-                .Property(e => e.Token);
+                .Property(e => e.Token)
+                .HasMaxLength(2000);
 
             builder
                 .Property(e => e.ExpiredDate)
