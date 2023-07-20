@@ -1,5 +1,12 @@
-﻿using System.Diagnostics;
+﻿using Falcon.Libraries.Common.Helper;
+using System.Diagnostics;
 using System.Text;
+using Falcon.BackEnd.APIGateway.Service.APIGateway;
+using Falcon.Libraries.Common.Enums;
+using Falcon.Libraries.Common.Object;
+using Newtonsoft.Json;
+using Falcon.BackEnd.APIGateway.Controllers.APIGateway.CustomModels;
+using System.IO;
 
 namespace Falcon.BackEnd.APIGateway.loggingmiddleware
 {
@@ -7,30 +14,33 @@ namespace Falcon.BackEnd.APIGateway.loggingmiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<RequestResponseLoggingMiddleware> _logger;
+        //private readonly JsonHelper _jsonHelper;
 
-        public RequestResponseLoggingMiddleware(RequestDelegate next, ILogger<RequestResponseLoggingMiddleware> logger)
+        public RequestResponseLoggingMiddleware(RequestDelegate next, ILogger<RequestResponseLoggingMiddleware> logger/*, JsonHelper jsonHelper*/)
         {
             _next = next;
-            _logger = logger;   
+            _logger = logger;
+            //_jsonHelper = jsonHelper;
         }
 
         private bool TargetRoute(PathString path)
         {
             // Add Route
-            return path.StartsWithSegments("/apigateway") ||
-                   path.StartsWithSegments("/notification");
+            return path.StartsWithSegments("/notification");
         }
 
         public async Task Invoke(HttpContext context)
         {
-            if (TargetRoute(context.Request.Path))
-            {
-                var stopwatch = Stopwatch.StartNew();
+            var accessToken = context.Request.Headers["Authorization"];
 
+            if(context.Request.Path.StartsWithSegments("/apigateway") || TargetRoute(context.Request.Path))
+            {
+                var ResultValidateToken = await ValidateToken(accessToken);
+
+                var stopwatch = Stopwatch.StartNew();
                 // Capture the original request body and response body
                 var originalRequestBody = context.Request.Body;
                 var originalResponseBody = context.Response.Body;
-
                 try
                 {
                     // Read the request body and log it
@@ -39,16 +49,28 @@ namespace Falcon.BackEnd.APIGateway.loggingmiddleware
 
                     using (var responseBody = new MemoryStream())
                     {
-                        // Set the response body to the memory stream
-                        context.Response.Body = responseBody;
+                        if (!(ResultValidateToken.Succeeded))
+                        {
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                            await context.Response.WriteAsync($"Token Expired : {accessToken}");
+                            //return;
+                            // Read the response body and log it
+                            string responseBodyContentValidateToken = await ReadResponseBodyAsync(context.Response);
+                            _logger.LogInformation("Response {StatusCode} {ResponseBody}", context.Response.StatusCode, responseBodyContentValidateToken);
+                        }
+                        else
+                        {
+                            // Set the response body to the memory stream
+                            context.Response.Body = responseBody;
 
-                        // Call the next middleware in the pipeline
-                        await _next(context);
+                            // Call the next middleware in the pipeline
+                            await _next(context);
 
-                        // Read the response body and log it
-                        string responseBodyContent = await ReadResponseBodyAsync(context.Response);
-                        _logger.LogInformation("Response {StatusCode} {ResponseBody}", context.Response.StatusCode, responseBodyContent);
-
+                            // Read the response body and log it
+                            string responseBodyContent = await ReadResponseBodyAsync(context.Response);
+                            _logger.LogInformation("Response {StatusCode} {ResponseBody}", context.Response.StatusCode, responseBodyContent);
+                            
+                        }
                         // Reset the position of the response memory stream to the beginning
                         responseBody.Seek(0, SeekOrigin.Begin);
 
@@ -73,7 +95,37 @@ namespace Falcon.BackEnd.APIGateway.loggingmiddleware
             {
                 await _next(context);
             }
+        }
 
+        private async Task<ObjectResult<object>> ValidateToken(string? input)
+        {
+            var retVal = new ObjectResult<object>(ServiceResultCode.BadRequest);
+
+            HttpClient client = new HttpClient();
+
+            var data = new
+            {
+                objRequestData = input
+            };
+
+            var json = JsonConvert.SerializeObject(data);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await client.PostAsync("https://apigw.kalbenutritionals.com/t/kalbenutritionals.com/wso/v1/WsoAPI/ValidateToken", httpContent);
+
+            // Read the responses
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            GetResponValidateTokenDto? responseObject = JsonConvert.DeserializeObject<GetResponValidateTokenDto>(responseContent);
+
+            if (responseObject != null && responseObject.objData != null)
+            {
+                if (responseObject.objData.active == true)
+                {
+                    retVal.OK("Active");
+                }
+            }
+            return retVal;
         }
 
         private async Task<string> ReadRequestBodyAsync(HttpRequest request)
@@ -99,7 +151,6 @@ namespace Falcon.BackEnd.APIGateway.loggingmiddleware
 
             // Reset the position of the response body stream to the beginning
             response.Body.Seek(0, SeekOrigin.Begin);
-
             return responseBody;
         }
     }

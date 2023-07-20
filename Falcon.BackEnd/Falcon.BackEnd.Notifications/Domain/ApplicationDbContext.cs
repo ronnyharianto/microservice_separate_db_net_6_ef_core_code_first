@@ -1,5 +1,4 @@
-﻿
-using Falcon.BackEnd.Notifications.Domain.Models.Builders;
+﻿using Falcon.BackEnd.Notifications.Domain.Models.Builders;
 using Falcon.BackEnd.Notifications.Domain.Models.Entities;
 using Microsoft.EntityFrameworkCore;
 

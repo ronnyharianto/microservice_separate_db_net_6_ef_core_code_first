@@ -20,6 +20,7 @@ namespace Falcon.BackEnd.APIGateway.Service.APIGateway
     {
         private readonly APIGatewaySetting _aPIGatewaySetting;
         private readonly JsonHelper _jsonHelper;
+
         public APIGatewayService(ApplicationDbContext dbContext, IMapper mapper, JsonHelper jsonHelper, IOptions<APIGatewaySetting> settings) : base(dbContext, mapper)
         {
             _aPIGatewaySetting = settings.Value;
@@ -96,5 +97,35 @@ namespace Falcon.BackEnd.APIGateway.Service.APIGateway
 
             return retVal;
         }
+
+        //public async Task<ObjectResult<object>> ValidateToken(string input)
+        //{
+        //    var retVal = new ObjectResult<object>(ServiceResultCode.BadRequest);
+
+        //    HttpClient client = new HttpClient();
+
+        //    var data = new
+        //    {
+        //        objRequestData = input
+        //    };
+
+        //    var json = _jsonHelper.SerializeObject(data);
+        //    var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+        //    var responselogin = await client.PostAsync("https://apigw.kalbenutritionals.com/t/kalbenutritionals.com/wso/v1/WsoAPI/ValidateToken", httpContent);
+
+        //    var responseLoginContent = await responselogin.Content.ReadAsStringAsync();
+
+        //    var responseLoginObject = JsonConvert.DeserializeObject(responseLoginContent);
+
+        //    if (responseLoginContent != null)
+        //    {
+        //        retVal.Obj = responseLoginObject;
+
+        //        retVal.OK("Active");
+        //    }
+
+        //    return retVal;
+        //}
     }
 }

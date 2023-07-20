@@ -160,6 +160,7 @@ namespace Falcon.Libraries.Microservice.Startups
             builder.Services.AddDbContext<TApplicationDbContext>(
                 options => options.UseNpgsql(builder.Configuration.GetConnectionString("postgreSQL"))
             );
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
             #endregion
 
             #region Configure Fluent Validation
