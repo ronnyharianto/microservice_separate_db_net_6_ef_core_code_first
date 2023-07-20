@@ -33,11 +33,12 @@ namespace Falcon.BackEnd.APIGateway.loggingmiddleware
         {
             var accessToken = context.Request.Headers["Authorization"];
 
-            if(context.Request.Path.StartsWithSegments("/apigateway") || TargetRoute(context.Request.Path))
+            if (context.Request.Path.StartsWithSegments("/apigateway") || TargetRoute(context.Request.Path))
             {
                 var ResultValidateToken = await ValidateToken(accessToken);
 
                 var stopwatch = Stopwatch.StartNew();
+
                 // Capture the original request body and response body
                 var originalRequestBody = context.Request.Body;
                 var originalResponseBody = context.Response.Body;
@@ -72,7 +73,7 @@ namespace Falcon.BackEnd.APIGateway.loggingmiddleware
                             // Read the response body and log it
                             string responseBodyContent = await ReadResponseBodyAsync(context.Response);
                             _logger.LogInformation("Response {StatusCode} {ResponseBody}", context.Response.StatusCode, responseBodyContent);
-                            
+
                         }
                         // Reset the position of the response memory stream to the beginning
                         responseBody.Seek(0, SeekOrigin.Begin);
@@ -104,28 +105,33 @@ namespace Falcon.BackEnd.APIGateway.loggingmiddleware
         {
             var retVal = new ObjectResult<object>(ServiceResultCode.BadRequest);
 
-            HttpClient client = new HttpClient();
-
-            var data = new
+            if (input != null)
             {
-                objRequestData = input
-            };
+                var resultAccessToken = input.Replace("Bearer", "");
 
-            var json = JsonConvert.SerializeObject(data);
-            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                HttpClient client = new HttpClient();
 
-            var response = await client.PostAsync("https://apigw.kalbenutritionals.com/t/kalbenutritionals.com/wso/v1/WsoAPI/ValidateToken", httpContent);
-
-            // Read the responses
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            GetResponValidateTokenDto? responseObject = JsonConvert.DeserializeObject<GetResponValidateTokenDto>(responseContent);
-
-            if (responseObject != null && responseObject.objData != null)
-            {
-                if (responseObject.objData.active == true)
+                var data = new
                 {
-                    retVal.OK("Active");
+                    objRequestData = resultAccessToken
+                };
+
+                var json = JsonConvert.SerializeObject(data);
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync("https://apigw.kalbenutritionals.com/t/kalbenutritionals.com/wso/v1/WsoAPI/ValidateToken", httpContent);
+
+                // Read the responses
+                var responseContent = await response.Content.ReadAsStringAsync();
+
+                GetResponValidateTokenDto? responseObject = JsonConvert.DeserializeObject<GetResponValidateTokenDto>(responseContent);
+
+                if (responseObject != null && responseObject.objData != null)
+                {
+                    if (responseObject.objData.active == true)
+                    {
+                        retVal.OK("Active");
+                    }
                 }
             }
             return retVal;
