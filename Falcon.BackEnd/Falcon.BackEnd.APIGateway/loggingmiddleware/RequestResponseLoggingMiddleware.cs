@@ -51,6 +51,9 @@ namespace Falcon.BackEnd.APIGateway.loggingmiddleware
                     {
                         if (!(ResultValidateToken.Succeeded))
                         {
+                            // Set the response body to the memory stream
+                            context.Response.Body = responseBody;
+
                             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                             await context.Response.WriteAsync($"Token Expired : {accessToken}");
                             //return;
