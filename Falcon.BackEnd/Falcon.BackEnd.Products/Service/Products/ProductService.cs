@@ -9,13 +9,14 @@ using Falcon.Libraries.Common.Helper;
 using Falcon.Libraries.Common.Object;
 using Falcon.Libraries.Microservice.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Falcon.BackEnd.Products.Service.Products
 {
     public class ProductService : BaseService<ApplicationDbContext>
     {
         private readonly CacheHelper _cacheHelper;
-        public ProductService(ApplicationDbContext dbContext, IMapper mapper, CacheHelper cacheHelper) : base(dbContext, mapper)
+        public ProductService(ApplicationDbContext dbContext, IMapper mapper, CacheHelper cacheHelper, FirebaseNotificationHelper firebaseNotificationHelper) : base(dbContext, mapper)
         {
             _cacheHelper = cacheHelper;
         }
